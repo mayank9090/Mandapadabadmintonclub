@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="hi" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mandapada Doubles League - Tournament Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            clubNavy: '#0d1f38',
+            clubBlue: '#1e40af',
+            clubSky: '#0284c7',
+            clubGold: '#c89d35',
+            clubOrange: '#ff5722',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .badminton-light-pattern {
+      background-color: #f8fafc;
+      background-image: 
+        linear-gradient(to right, rgba(30, 64, 175, 0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(30, 64, 175, 0.035) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="badminton-light-pattern text-slate-800 font-sans min-h-screen selection:bg-clubOrange selection:text-white pb-12">
+
+  <!-- ================= 1. HEADER (WITH OFFICIAL CLUB LOGO) ================= -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 sm:h-20">
+        
+        <!-- Official Club Logo -->
+        <a href="index.html" class="flex items-center gap-2.5 sm:gap-3 group">
+          <img src="https://i.postimg.cc/bw5CNCYV/1000442042-removebg-preview.png" alt="Mandapada BC Logo" class="w-11 h-11 sm:w-14 sm:h-14 object-contain" />
+          <div>
+            <span class="font-black text-base sm:text-lg tracking-wider text-clubNavy flex items-center gap-1 font-serif">
+              MANDAPADA
+              <span class="w-2 h-2 rounded-full bg-clubOrange"></span>
+            </span>
+            <span class="text-[9px] sm:text-[10px] font-bold tracking-[0.2em] text-clubSky block uppercase">
+              Tournament Portal 
+            </span>
+          </div>
+        </a>
+
+        <!-- Back to Home Button -->
+        <a href="index.html" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm transition flex items-center gap-1.5 shadow-md">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Home</span>
+        </a>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= 2. BANNER ================= -->
+  <section class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-6 pb-2">
+    <div id="tournHeroBannerBox" class="bg-gradient-to-r from-blue-950 via-clubNavy to-slate-950 border-2 border-amber-400/80 rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-white shadow-xl relative overflow-hidden bg-cover bg-center">
+      
+      <!-- Poster Backdrop Layer -->
+      <div id="tournPosterBackdrop" class="absolute inset-0 bg-cover bg-center opacity-25 pointer-events-none transition-all"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-clubNavy/85 to-slate-950/90 pointer-events-none"></div>
+
+      <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+        <div class="flex items-start sm:items-center gap-4">
+          
+          <!-- TOURNAMENT LOGO BOX -->
+          <div id="dynTournLogoContainer" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-slate-900 border-2 border-amber-400 flex items-center justify-center text-3xl shrink-0 overflow-hidden shadow-lg">
+            🏆
+          </div>
+
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span id="dynTournStageBadge" class="px-3 py-0.5 bg-slate-800 text-amber-400 border border-amber-400/40 text-[10px] sm:text-[11px] font-black rounded-full uppercase tracking-wider inline-flex items-center gap-1.5">
+                ⏳ COMING SOON
+              </span>
+
+              <span id="dynBannerFee" class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-[10px] sm:text-[11px] font-bold rounded-full">
+                Entry Fee: ₹250 / Player (₹500 / Team)
+              </span>
+            </div>
+            
+            <h1 id="dynTournTitle" class="text-2xl sm:text-4xl font-black mt-2 font-serif">
+              Mandapada Doubles Championship 2026
+            </h1>
+            <p id="dynTournDesc" class="text-slate-300 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">
+              Round Robin League ➔ Top Teams Playoffs ➔ Grand Final!
+            </p>
+
+            <div class="flex flex-wrap items-center gap-3 mt-3 text-[11px] sm:text-xs font-semibold text-slate-300">
+              <span><i class="fa-solid fa-sitemap text-clubGold mr-1"></i> League ➔ Playoffs ➔ Final</span>
+              <span><i class="fa-solid fa-calendar text-clubOrange mr-1"></i> <span id="dynTournDateDetail">Dates To Be Announced Soon</span></span>
+              <span><i class="fa-solid fa-award text-amber-400 mr-1"></i> Win: 2 Pts | Loss: 0 Pts</span>
+              
+              <button id="viewPosterBtn" onclick="openPosterModal()" class="hidden px-2.5 py-1 bg-white/20 hover:bg-white/30 text-white rounded-lg text-[10px] font-bold transition flex items-center gap-1 cursor-pointer">
+                <i class="fa-solid fa-image"></i>
+                <span>View Full Poster</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Awards Badge -->
+        <div class="bg-white/10 backdrop-blur-md border border-white/20 p-4 sm:p-5 rounded-2xl text-center w-full md:w-auto min-w-[190px] shadow-lg shrink-0">
+          <span class="text-2xl block">🏆</span>
+          <span class="text-xs text-amber-300 font-bold uppercase tracking-wider block mt-0.5">Tournament Awards</span>
+          <p class="text-base sm:text-lg font-black text-white">Gold & Silver Trophies</p>
+          <span class="text-[11px] text-slate-300 block">+ Official Medals</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 2.1 CLEAN LIVE SCORECARD ================= -->
+    <div id="tournLiveScoreCard" class="mt-4 max-w-lg mx-auto bg-white/95 backdrop-blur-md border-2 border-slate-200/90 rounded-3xl p-4 sm:p-5 shadow-lg relative overflow-hidden transition-all text-left">
+      
+      <!-- Minimal Clean Top Bar -->
+      <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <span id="tournLiveStatusBadge" class="px-2.5 py-0.5 bg-red-50 text-red-600 border border-red-200 text-[10px] font-black rounded-full uppercase tracking-wider inline-flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+            <span id="tournLiveStatusText">LIVE MATCH</span>
+          </span>
+        </div>
+        <span id="tournSetBadge" class="text-xs font-black text-clubBlue uppercase">SET 1 (Best of 3)</span>
+      </div>
+
+      <!-- Teams Live Clash -->
+      <div class="grid grid-cols-5 items-center py-3.5">
+        <!-- Team A -->
+        <div class="col-span-2 flex flex-col items-center text-center">
+          <div id="tournTeamLogoA" class="w-11 h-11 rounded-full bg-slate-100 border-2 border-blue-200 flex items-center justify-center mb-1 shadow-xs overflow-hidden">
+            ⚡
+          </div>
+          <h4 id="tournTeamNameA" class="font-black text-xs sm:text-sm text-clubNavy truncate max-w-[120px]">Team 1</h4>
+          <span id="tournTeamSetsA" class="text-[10px] font-bold text-clubBlue mt-0.5">Sets: 0</span>
+        </div>
+
+        <!-- Score Digits -->
+        <div class="col-span-1 flex flex-col items-center justify-center">
+          <div class="flex items-center gap-1 font-mono text-2xl sm:text-3xl font-black text-clubNavy">
+            <span id="tournLivePtsA" class="text-clubBlue">0</span>
+            <span class="text-slate-300 text-xl font-sans">:</span>
+            <span id="tournLivePtsB" class="text-clubOrange">0</span>
+          </div>
+          <span class="text-[9px] text-slate-400 font-bold uppercase mt-0.5">POINTS</span>
+        </div>
+
+        <!-- Team B -->
+        <div class="col-span-2 flex flex-col items-center text-center">
+          <div id="tournTeamLogoB" class="w-11 h-11 rounded-full bg-slate-100 border-2 border-orange-200 flex items-center justify-center mb-1 shadow-xs overflow-hidden">
+            👑
+          </div>
+          <h4 id="tournTeamNameB" class="font-black text-xs sm:text-sm text-clubNavy truncate max-w-[120px]">Team 2</h4>
+          <span id="tournTeamSetsB" class="text-[10px] font-bold text-clubOrange mt-0.5">Sets: 0</span>
+        </div>
+      </div>
+
+      <!-- Clean Footer -->
+      <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+        <span id="tournSetsHistory" class="font-semibold text-emerald-700 truncate max-w-[260px]">Live feed active</span>
+        <span class="text-emerald-600 font-bold flex items-center gap-1 text-[10px]">
+          <i class="fa-solid fa-bolt"></i> Live Score
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 3. NAVIGATION TABS (5 TABS DYNAMIC COUNTS) ================= -->
+  <div class="sticky top-16 sm:top-20 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 py-2.5 mb-4 shadow-xs">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs sm:text-sm font-bold">
+        <button onclick="switchTab('pointsTab')" id="btn-pointsTab" class="tab-btn px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl transition bg-clubNavy text-white flex items-center gap-1.5 whitespace-nowrap text-xs">
+          <i class="fa-solid fa-table-list"></i>
+          <span>1. Points Table</span>
+        </button>
+        <button onclick="switchTab('fixturesTab')" id="btn-fixturesTab" class="tab-btn px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl transition text-slate-600 hover:bg-slate-100 flex items-center gap-1.5 whitespace-nowrap text-xs">
+          <i class="fa-solid fa-sitemap"></i>
+          <span>2. Playoffs & Fixtures (<span id="fixturesBadgeCount">0</span>)</span>
+        </button>
+        <button onclick="switchTab('teamsTab')" id="btn-teamsTab" class="tab-btn px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl transition text-slate-600 hover:bg-slate-100 flex items-center gap-1.5 whitespace-nowrap text-xs">
+          <i class="fa-solid fa-users"></i>
+          <span>3. Teams (<span id="teamsTabCount">0</span>)</span>
+        </button>
+        <button onclick="switchTab('playersTab')" id="btn-playersTab" class="tab-btn px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl transition text-slate-600 hover:bg-slate-100 flex items-center gap-1.5 whitespace-nowrap text-xs">
+          <i class="fa-solid fa-user"></i>
+          <span>4. Players (<span id="playersTabCount">0</span>)</span>
+        </button>
+        <button onclick="switchTab('rulesTab')" id="btn-rulesTab" class="tab-btn px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl transition text-slate-600 hover:bg-slate-100 flex items-center gap-1.5 whitespace-nowrap text-xs">
+          <i class="fa-solid fa-book"></i>
+          <span>5. Rules & Fees</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 pb-12">
+
+    <!-- ================= TAB 1: POINTS TABLE (ALL 8 COLUMNS MOBILE-FRIENDLY) ================= -->
+    <section id="pointsTab" class="tab-content block space-y-3">
+      <div class="px-1">
+        <h2 class="text-base sm:text-2xl font-black text-clubNavy">Tournament Points Table</h2>
+        <span class="text-[10px] sm:text-xs text-slate-500 font-semibold block">Top 4 Teams Playoffs ke liye qualify karenge </span>
+      </div>
+
+      <!-- MOBILE 8-COLUMNS TABLE -->
+      <div class="bg-white border-2 border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div class="w-full overflow-x-auto no-scrollbar">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-100 border-b border-slate-200 text-[10px] sm:text-[11px] font-black text-slate-600 uppercase">
+                <th class="py-2.5 pl-2 pr-1 text-center w-8">#</th>
+                <th class="py-2.5 px-2">Team</th>
+                <th class="py-2.5 px-1 text-center w-7">P</th>
+                <th class="py-2.5 px-1 text-center text-emerald-600 w-7">W</th>
+                <th class="py-2.5 px-1 text-center text-rose-500 w-7">L</th>
+                <th class="py-2.5 px-1.5 text-center w-10">DIFF</th>
+                <th class="py-2.5 px-2 text-center bg-blue-50 text-clubBlue font-black w-10">PTS</th>
+                <th class="py-2.5 pr-2 pl-1 text-center w-11">Status</th>
+              </tr>
+            </thead>
+            <tbody id="pointsTableBody" class="divide-y divide-slate-100 font-semibold"></tbody>
+          </table>
+        </div>
+
+        <div class="p-2.5 sm:p-3 bg-slate-50 border-t border-slate-200 text-[10px] sm:text-xs text-slate-500 flex justify-between items-center">
+          <span class="flex items-center gap-1.5 text-emerald-700 font-bold">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>Top 4 Teams = Playoffs Qualifiers (Q)</span>
+          </span>
+          <span class="text-slate-400 font-medium">Win: 2 Pts | Loss: 0 Pts</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 2: PLAYOFFS & FIXTURES (AUTO-PROGRESSION ENGINE) ================= -->
+    <section id="fixturesTab" class="tab-content hidden space-y-5">
+      <div>
+        <h2 class="text-lg sm:text-2xl font-black text-clubNavy">Playoffs & Match Schedule</h2>
+        <span class="text-xs text-slate-500">League matches aur Top 4 Playoffs Stage</span>
+      </div>
+
+      <!-- PLAYOFFS STAGE CARDS (AUTO-UPDATES ON LEAGUE FINISH) -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between px-1">
+          <span class="text-xs font-black text-clubBlue uppercase tracking-wider block">🏆 Playoffs Stage (Top 4 Qualifiers)</span>
+          <span id="playoffsAutoLockStatus" class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
+            ⏳ League Stage In Progress
+          </span>
+        </div>
+
+        <!-- Playoff 1 & Playoff 2 Matchups -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          
+          <!-- Playoff 1  -->
+          <div class="bg-white border-2 border-blue-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-slate-100">
+              <span class="text-[10px] font-black text-clubBlue uppercase bg-blue-50 px-2 py-0.5 rounded">Playoff 1 (Semi-Final 1)</span>
+              <span id="sf1StatusBadge" class="text-[10px] font-bold text-slate-400">Rank #1 vs Rank #4</span>
+            </div>
+
+            <!-- Dynamic Team 1 vs Team 4 Matchup -->
+            <div id="sf1MatchupContainer" class="py-2 flex items-center justify-between">
+              <!-- Rendered via JS -->
+            </div>
+
+            <span class="text-[10px] text-slate-400 font-semibold block text-center pt-1 border-t border-slate-50">Winner advances to Grand Final</span>
+          </div>
+
+          <!-- Playoff 2  -->
+          <div class="bg-white border-2 border-blue-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-slate-100">
+              <span class="text-[10px] font-black text-clubBlue uppercase bg-blue-50 px-2 py-0.5 rounded">Playoff 2 (Semi-Final 2)</span>
+              <span id="sf2StatusBadge" class="text-[10px] font-bold text-slate-400">Rank #2 vs Rank #3</span>
+            </div>
+
+            <!-- Dynamic Team 2 vs Team 3 Matchup -->
+            <div id="sf2MatchupContainer" class="py-2 flex items-center justify-between">
+              <!-- Rendered via JS -->
+            </div>
+
+            <span class="text-[10px] text-slate-400 font-semibold block text-center pt-1 border-t border-slate-50">Winner advances to Grand Final</span>
+          </div>
+
+        </div>
+
+        <!-- Grand Final Card (Auto-Updates With Finalists) -->
+        <div class="bg-gradient-to-b from-amber-50 to-white border-2 border-amber-400 rounded-2xl p-4 sm:p-5 shadow-sm text-center mt-2">
+          <span class="px-3 py-0.5 bg-amber-500 text-slate-950 font-black text-[9px] uppercase rounded-full">
+            🏆 Grand Championship Final
+          </span>
+
+          <!-- Finalist Matchup or Placeholder -->
+          <div id="finalMatchupContainer" class="my-3 py-2 border-y border-amber-200">
+            <!-- Rendered via JS -->
+          </div>
+
+          <span class="inline-block text-[11px] font-bold text-amber-700 bg-amber-100 px-3 py-1 rounded-full">
+            Official Trophies & Medals Presentation
+          </span>
+        </div>
+      </div>
+
+      <!-- AUTO-CALCULATED FIXTURES SECTION -->
+      <div id="generatedFixturesSection" class="space-y-3 pt-3 border-t border-slate-200 hidden">
+        <div class="flex items-center justify-between px-1">
+          <span class="text-xs font-black text-clubOrange uppercase tracking-wider block">⚡ Live Scheduled Matches</span>
+          <span id="fixtureFormatBadge" class="text-[10px] font-bold px-2 py-0.5 bg-blue-50 text-clubBlue rounded-full uppercase">Round Robin</span>
+        </div>
+        <div id="generatedFixturesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+      </div>
+
+      <div id="defaultScheduleSection" class="p-6 bg-white border border-slate-200 rounded-2xl text-center py-8">
+        <i class="fa-solid fa-calendar-days text-slate-300 text-3xl mb-2"></i>
+        <h4 class="font-bold text-slate-700 text-sm">Match Schedule</h4>
+        <p class="text-xs text-slate-400 mt-1"></p>
+      </div>
+    </section>
+
+    <!-- ================= TAB 3: TEAMS ================= -->
+    <section id="teamsTab" class="tab-content hidden space-y-4">
+      <div>
+        <h2 class="text-lg sm:text-2xl font-black text-clubNavy">Participating Teams</h2>
+        <span class="text-xs text-slate-500">Club Doubles Squads & Partners</span>
+      </div>
+      <div id="teamsCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+    </section>
+
+    <!-- ================= TAB 4: PLAYERS ================= -->
+    <section id="playersTab" class="tab-content hidden space-y-4">
+      <div>
+        <h2 class="text-lg sm:text-2xl font-black text-clubNavy">Players Directory</h2>
+        <span class="text-xs text-slate-500">Tournament Players Roster</span>
+      </div>
+      <div id="playersGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+    </section>
+
+    <!-- ================= TAB 5: RULES & FEES (DETAILED) ================= -->
+    <section id="rulesTab" class="tab-content hidden space-y-4">
+      <div>
+        <h2 class="text-lg sm:text-2xl font-black text-clubNavy">Tournament Rules & Guidelines</h2>
+        <span class="text-xs text-slate-500">Mandapada Badminton Club Official Rules, Regulations & Terms</span>
+      </div>
+
+      <!-- Entry Fee Highlight Card -->
+      <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-blue-50 border-2 border-emerald-300 rounded-2xl p-4 sm:p-5 shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-lg font-black shrink-0">₹</div>
+          <div>
+            <h3 id="dynRuleFeeTitle" class="font-black text-sm sm:text-base text-clubNavy">Entry Fee: ₹250 / Player (₹500 / Team)</h3>
+            <p class="text-xs text-slate-600 mt-0.5">Registration fee tournament shuru hone se pehle ya deadline ke andar coordinator ke paas jama karni anivary hai.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Rules Grid -->
+      <div id="rulesListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
+        
+        <!-- Rule 1: Format & Structure -->
+        <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-sm">
+          <h4 class="font-black text-xs text-clubNavy flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-blue-100 text-clubBlue flex items-center justify-center text-[10px] font-bold">1</span>
+            <span>Tournament Format & Structure</span>
+          </h4>
+          <ul class="text-slate-600 space-y-1.5 mt-2 list-disc list-inside">
+            <li>Tournament strictly <strong>Doubles (2 vs 2)</strong> format me khela jayega.</li>
+            <li>Pehle sabhi registered teams ke beech <strong>Round Robin League</strong> matches honge.</li>
+            <li>League stage ke baad points aur net run/point difference ke aadhar par <strong>Top 4 Teams Playoffs (Semi-Finals)</strong> ke liye qualify karengi.</li>
+            <li>Playoffs ke winners aapas me <strong>Grand Championship Final</strong> khelenge.</li>
+          </ul>
+        </div>
+
+        <!-- Rule 2: Scoring System -->
+        <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-sm">
+          <h4 class="font-black text-xs text-clubNavy flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px] font-bold">2</span>
+            <span>Scoring & Points System</span>
+          </h4>
+          <ul class="text-slate-600 space-y-1.5 mt-2 list-disc list-inside">
+            <li>Matches standard badminton scoring rules ke mutabik <strong>Best of 3 Sets</strong> honge.</li>
+            <li>Har jeet (Win) par team ko <strong>2 Points</strong> milenge aur haar (Loss) par <strong>0 Points</strong> milenge.</li>
+            <li>Points table me tie hone par teams ka Net Point Difference dekha jayega.</li>
+          </ul>
+        </div>
+
+        <!-- Rule 3: Registration & Fees Terms -->
+        <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-sm">
+          <h4 class="font-black text-xs text-clubNavy flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-[10px] font-bold">3</span>
+            <span>Registration & Fees Policy</span>
+          </h4>
+          <ul class="text-slate-600 space-y-1.5 mt-2 list-disc list-inside">
+            <li>Har player ko निर्धारित Entry Fee (₹250 per player / ₹500 per team) pay karni hogi.</li>
+            <li>Fee non-refundable hai ek baar tournament schedule lock hone ke baad.</li>
+            <li>Team ka naam aur dono players ki jodi official roster me tabhi confirm hogi jab fee fully paid hogi.</li>
+          </ul>
+        </div>
+
+        <!-- Rule 4: Match Timings & Attendance -->
+        <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-sm">
+          <h4 class="font-black text-xs text-clubNavy flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-[10px] font-bold">4</span>
+            <span>Timing & Punctuality Guidelines</span>
+          </h4>
+          <ul class="text-slate-600 space-y-1.5 mt-2 list-disc list-inside">
+            <li>Sabhi players ko apne scheduled match time se <strong>10 minute pehle</strong> court par report karna anivary hai.</li>
+            <li>Agar koi team scheduled time ke 10 minute baad bhi court par nahi pahunchti hai, toh opposing team ko Walkover (WO) de diya jayega.</li>
+            <li>Kharab mausam ya anya karan se schedule me badlav ki ghosana committee dwara ki jayegi.</li>
+          </ul>
+        </div>
+
+        <!-- Rule 5: Code of Conduct & Fair Play -->
+        <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-sm">
+          <h4 class="font-black text-xs text-clubNavy flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-[10px] font-bold">5</span>
+            <span>Code of Conduct & Fair Play</span>
+          </h4>
+          <ul class="text-slate-600 space-y-1.5 mt-2 list-disc list-inside">
+            <li>Sabhi participants aur club members se sportsmanship aur apas me sauhard banane ki ummeed ki jati hai.</li>
+            <li>Referee ya umpire ka nirnay antim hoga. Kisi bhi tarah ka durvyavahar (Misbehavior) ya argument karne par team ko tournament se disqualify kiya ja sakta hai.</li>
+            <li>Court ke niyamo aur equipment ki dekhbhal karna har player ki zimmedari hai.</li>
+          </ul>
+        </div>
+
+        <!-- Rule 6: Prizes & Awards -->
+        <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-sm">
+          <h4 class="font-black text-xs text-clubNavy flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-cyan-100 text-cyan-700 flex items-center justify-center text-[10px] font-bold">6</span>
+            <span>Trophies & Prizes Terms</span>
+          </h4>
+          <ul class="text-slate-600 space-y-1.5 mt-2 list-disc list-inside">
+            <li>Winner team ke liye <strong>Gold Trophy</strong> aur Runners-up ke liye <strong>Silver Trophy</strong> pradaan ki jayegi.</li>
+            <li>Finalists aur semi-finalists ko official club medals se sammanit kiya jayega.</li>
+            <li>Sabhi awards tournament ke closing ceremony me diye jayenge.</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Poster Modal -->
+  <div id="posterModal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="max-w-2xl w-full bg-slate-900 rounded-3xl p-4 border border-slate-800 relative shadow-2xl text-center">
+      <button onclick="closePosterModal()" class="absolute top-3 right-4 text-white text-xl hover:text-rose-400 cursor-pointer">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h3 class="text-sm font-black text-white mb-3" id="modalPosterTitle">Official Tournament Poster</h3>
+      <img id="fullPosterImage" src="" alt="Poster" class="max-h-[75vh] w-auto mx-auto rounded-2xl shadow-lg object-contain" />
+    </div>
+  </div>
+
+  <footer class="py-6 border-t border-slate-200 text-center text-xs text-slate-400">
+    <p>© Mandapada Badminton Club. Official Tournament Portal .</p>
+  </footer>
+
+  <!-- ================= FIREBASE & DATA SYNCHRONIZATION ENGINE ================= -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCyqCyX17czRzn8MPsguyxGpIuOK4Iqhco",
+      authDomain: "mandapada-badminton.firebaseapp.com",
+      databaseURL: "https://mandapada-badminton-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "mandapada-badminton",
+      storageBucket: "mandapada-badminton.firebasestorage.app",
+      messagingSenderId: "1052398041871",
+      appId: "1:1052398041871:web:900a055cf244597e76dc7a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Global Store populated strictly from Firebase
+    window.firebaseData = {
+      tournaments: [],
+      teams: [],
+      players: [],
+      fixtures: [],
+      settings: { entryFee: 250 },
+      liveScoring: null
+    };
+
+    // Real-time Listeners with correct database paths (`tournaments`, `teams`, `players`, `fixtures`, `settings`, `live_scoring`)
+    onValue(ref(db, 'tournaments'), (snapshot) => {
+      const val = snapshot.val();
+      window.firebaseData.tournaments = val ? (Array.isArray(val) ? val : Object.values(val)) : [];
+      triggerUIRefresh();
+    });
+
+    onValue(ref(db, 'teams'), (snapshot) => {
+      const val = snapshot.val();
+      window.firebaseData.teams = val ? (Array.isArray(val) ? val : Object.values(val)) : [];
+      triggerUIRefresh();
+    });
+
+    onValue(ref(db, 'players'), (snapshot) => {
+      const val = snapshot.val();
+      window.firebaseData.players = val ? (Array.isArray(val) ? val : Object.values(val)) : [];
+      triggerUIRefresh();
+    });
+
+    onValue(ref(db, 'fixtures'), (snapshot) => {
+      const val = snapshot.val();
+      window.firebaseData.fixtures = val ? (Array.isArray(val) ? val : Object.values(val)) : [];
+      triggerUIRefresh();
+    });
+
+    onValue(ref(db, 'settings'), (snapshot) => {
+      const val = snapshot.val();
+      window.firebaseData.settings = val || { entryFee: 250 };
+      triggerUIRefresh();
+    });
+
+    onValue(ref(db, 'live_scoring'), (snapshot) => {
+      window.firebaseData.liveScoring = snapshot.val() || null;
+      if (typeof renderTournamentLiveScore === 'function') {
+        renderTournamentLiveScore();
+      }
+    });
+
+    function triggerUIRefresh() {
+      if (typeof initTournamentPage === 'function') {
+        initTournamentPage();
+      }
+    }
+  </script>
+
+  <!-- ================= UI SCRIPTS ================= -->
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-clubNavy', 'text-white');
+        btn.classList.add('text-slate-600', 'hover:bg-slate-100');
+      });
+      document.getElementById(tabId).classList.remove('hidden');
+      const activeBtn = document.getElementById('btn-' + tabId);
+      activeBtn.classList.add('bg-clubNavy', 'text-white');
+      activeBtn.classList.remove('text-slate-600', 'hover:bg-slate-100');
+    }
+
+    function initTournamentPage() {
+      const fb = window.firebaseData || {};
+      const liveTournaments = fb.tournaments || [];
+      const liveTeams = fb.teams || [];
+      const livePlayers = fb.players || [];
+      const liveSettings = fb.settings || { entryFee: 250 };
+
+      const activeTourn = liveTournaments.find(t => t.status === "Active") || liveTournaments[0];
+      
+      if (activeTourn) {
+        document.getElementById('dynTournTitle').textContent = activeTourn.name;
+        document.getElementById('dynTournDesc').innerHTML = `<strong>${activeTourn.format || 'Round Robin League'}</strong> ➔ Points Table ke <strong>Top Teams Playoffs</strong> me qualify karenge ➔ Grand Final!`;
+        document.getElementById('dynTournDateDetail').textContent = activeTourn.dateDetails || "Dates To Be Announced Soon";
+
+        const stage = activeTourn.stage || "Coming Soon";
+        const badgeEl = document.getElementById('dynTournStageBadge');
+        if (stage === "Live") {
+          badgeEl.className = "px-3 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[10px] sm:text-[11px] font-black rounded-full uppercase tracking-wider inline-flex items-center gap-1.5";
+          badgeEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 🟢 LIVE TOURNAMENT`;
+        } else if (stage === "Preparation") {
+          badgeEl.className = "px-3 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] sm:text-[11px] font-black rounded-full uppercase tracking-wider";
+          badgeEl.textContent = `🛠️ PREPARATION STAGE`;
+        } else if (stage === "Date Announced") {
+          badgeEl.className = "px-3 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/40 text-[10px] sm:text-[11px] font-black rounded-full uppercase tracking-wider";
+          badgeEl.textContent = `📢 DATE ANNOUNCED • REGISTRATION OPEN`;
+        } else {
+          badgeEl.className = "px-3 py-0.5 bg-slate-800 text-amber-400 border border-amber-400/30 text-[10px] sm:text-[11px] font-black rounded-full uppercase tracking-wider";
+          badgeEl.textContent = `⏳ COMING SOON`;
+        }
+
+        const fee = activeTourn.entryFeePlayer || liveSettings.entryFee || 250;
+        document.getElementById('dynBannerFee').textContent = `Entry Fee: ₹${fee} / Player (₹${fee * 2} / Team)`;
+        document.getElementById('dynRuleFeeTitle').textContent = `Entry Fee: ₹${fee} / Player (₹${fee * 2} / Team)`;
+
+        const backdrop = document.getElementById('tournPosterBackdrop');
+        const viewPosterBtn = document.getElementById('viewPosterBtn');
+        if (activeTourn.tournBanner && activeTourn.tournBanner.trim().length > 0) {
+          backdrop.style.backgroundImage = `url('${activeTourn.tournBanner}')`;
+          backdrop.classList.remove('opacity-25');
+          backdrop.classList.add('opacity-40');
+          viewPosterBtn.classList.remove('hidden');
+        } else {
+          backdrop.style.backgroundImage = 'none';
+          viewPosterBtn.classList.add('hidden');
+        }
+
+        const logoBox = document.getElementById('dynTournLogoContainer');
+        if (activeTourn.tournLogo && activeTourn.tournLogo.trim().length > 0) {
+          logoBox.innerHTML = `<img src="${activeTourn.tournLogo}" alt="Logo" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://via.placeholder.com/80?text=🏆';" />`;
+        } else {
+          logoBox.innerHTML = '🏆';
+        }
+      }
+
+      document.getElementById('teamsTabCount').textContent = liveTeams.length;
+      document.getElementById('playersTabCount').textContent = livePlayers.length;
+
+      renderLivePointsTable();
+      renderLiveFixturesSection();
+      renderLiveTeamsCards();
+      renderLivePlayersGrid();
+      renderTournamentLiveScore();
+      updatePlayoffsProgression();
+    }
+
+    function openPosterModal() {
+      const fb = window.firebaseData || {};
+      const liveTournaments = fb.tournaments || [];
+      const activeTourn = liveTournaments.find(t => t.status === "Active") || liveTournaments[0];
+      if (activeTourn && activeTourn.tournBanner) {
+        document.getElementById('fullPosterImage').src = activeTourn.tournBanner;
+        document.getElementById('modalPosterTitle').textContent = `${activeTourn.name} - Official Poster`;
+        document.getElementById('posterModal').classList.remove('hidden');
+      }
+    }
+
+    function closePosterModal() {
+      document.getElementById('posterModal').classList.add('hidden');
+    }
+
+    function renderTeamLogo(teamName, sizeClass = "w-6 h-6") {
+      const fb = window.firebaseData || {};
+      const liveTeams = fb.teams || [];
+      const t = liveTeams.find(x => x.teamName && x.teamName.trim().toLowerCase() === teamName.trim().toLowerCase());
+      if (t && t.teamLogo && t.teamLogo.trim().length > 0) {
+        return `<img src="${t.teamLogo}" alt="${t.teamName}" class="${sizeClass} rounded-full object-cover border border-slate-300 shrink-0" onerror="this.onerror=null; this.src='https://via.placeholder.com/60?text=🏸';" />`;
+      }
+      return `<div class="${sizeClass} rounded-full bg-clubBlue text-white flex items-center justify-center text-[10px] font-bold shadow-xs shrink-0">🏸</div>`;
+    }
+
+    /* REAL-TIME LIVE SCORECARD ENGINE */
+    function renderTournamentLiveScore() {
+      const fb = window.firebaseData || {};
+      const liveData = fb.liveScoring;
+      const fixtures = fb.fixtures || [];
+      const liveTournaments = fb.tournaments || [];
+      const liveTeams = fb.teams || [];
+      const activeTourn = liveTournaments.find(t => t.status === "Active") || liveTournaments[0];
+
+      const statusBadge = document.getElementById('tournLiveStatusBadge');
+      const setBadge = document.getElementById('tournSetBadge');
+      const nameA = document.getElementById('tournTeamNameA');
+      const nameB = document.getElementById('tournTeamNameB');
+      const logoA = document.getElementById('tournTeamLogoA');
+      const logoB = document.getElementById('tournTeamLogoB');
+      const setsA = document.getElementById('tournTeamSetsA');
+      const setsB = document.getElementById('tournTeamSetsB');
+      const ptsA = document.getElementById('tournLivePtsA');
+      const ptsB = document.getElementById('tournLivePtsB');
+      const historyText = document.getElementById('tournSetsHistory');
+
+      if (liveData && liveData.active && liveData.teamA && liveData.teamB) {
+        statusBadge.className = "px-2.5 py-0.5 bg-red-50 text-red-600 border border-red-200 text-[10px] font-black rounded-full uppercase tracking-wider inline-flex items-center gap-1.5";
+        statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> LIVE MATCH`;
+        setBadge.textContent = `SET ${liveData.currentSet || 1} (Best of 3)`;
+
+        nameA.textContent = liveData.teamA.teamName;
+        nameB.textContent = liveData.teamB.teamName;
+        logoA.innerHTML = renderTeamLogo(liveData.teamA.teamName, "w-full h-full");
+        logoB.innerHTML = renderTeamLogo(liveData.teamB.teamName, "w-full h-full");
+
+        setsA.textContent = `Sets: ${liveData.setsA || 0}`;
+        setsB.textContent = `Sets: ${liveData.setsB || 0}`;
+        ptsA.textContent = liveData.ptsA || 0;
+        ptsB.textContent = liveData.ptsB || 0;
+
+        if (liveData.completedSets && liveData.completedSets.length > 0) {
+          historyText.textContent = liveData.completedSets.map(s => `Set ${s.set}: [${s.a}-${s.b}]`).join('  •  ');
+        } else {
+          historyText.textContent = "Match in progress";
+        }
+      } else if (fixtures && fixtures.length > 0 && fixtures.some(f => f.status === 'Upcoming')) {
+        const upcoming = fixtures.find(f => f.status === 'Upcoming');
+        statusBadge.className = "px-2.5 py-0.5 bg-blue-50 text-clubBlue border border-blue-200 text-[10px] font-black rounded-full uppercase tracking-wider inline-flex items-center gap-1.5";
+        statusBadge.textContent = "NEXT MATCH";
+        setBadge.textContent = upcoming.round || "Upcoming";
+
+        nameA.textContent = upcoming.teamA;
+        nameB.textContent = upcoming.teamB;
+        logoA.innerHTML = renderTeamLogo(upcoming.teamA, "w-full h-full");
+        logoB.innerHTML = renderTeamLogo(upcoming.teamB, "w-full h-full");
+
+        setsA.textContent = "Match";
+        setsB.textContent = "Schedule";
+        ptsA.textContent = "-";
+        ptsB.textContent = "-";
+        historyText.textContent = `${upcoming.time || 'Schedule announced'}`;
+      } else {
+        const stage = activeTourn ? (activeTourn.stage || "Coming Soon") : "Coming Soon";
+        statusBadge.className = "px-2.5 py-0.5 bg-slate-800 text-amber-400 border border-amber-400/40 text-[10px] font-black rounded-full uppercase tracking-wider inline-flex items-center gap-1.5";
+        statusBadge.textContent = stage;
+        setBadge.textContent = "LIVE FEED";
+
+        nameA.textContent = liveTeams[0] ? liveTeams[0].teamName : "Team 1";
+        nameB.textContent = liveTeams[1] ? liveTeams[1].teamName : "Team 2";
+        logoA.innerHTML = renderTeamLogo(nameA.textContent, "w-full h-full");
+        logoB.innerHTML = renderTeamLogo(nameB.textContent, "w-full h-full");
+
+        setsA.textContent = "Tournament";
+        setsB.textContent = "Doubles";
+        ptsA.textContent = "0";
+        ptsB.textContent = "0";
+        historyText.textContent = activeTourn && activeTourn.dateDetails ? activeTourn.dateDetails : "Dates To Be Announced Soon";
+      }
+    }
+
+    /* ====================================================
+       AUTOMATIC PLAYOFFS & GRAND FINAL PROGRESSION ENGINE
+    ==================================================== */
+    function updatePlayoffsProgression() {
+      const fb = window.firebaseData || {};
+      let liveTeams = [...(fb.teams || [])];
+      let liveFixtures = fb.fixtures || [];
+
+      liveTeams.sort((a, b) => (b.points !== a.points ? b.points - a.points : b.diff - a.diff));
+
+      const rrFixtures = liveFixtures.filter(f => f.format === "Round Robin");
+      const isLeagueFinished = rrFixtures.length > 0 && rrFixtures.every(f => f.status === "Finished");
+      const isLeagueStarted = liveTeams.some(t => t.played > 0);
+
+      const lockStatusBadge = document.getElementById('playoffsAutoLockStatus');
+      const sf1Status = document.getElementById('sf1StatusBadge');
+      const sf2Status = document.getElementById('sf2StatusBadge');
+      const sf1Box = document.getElementById('sf1MatchupContainer');
+      const sf2Box = document.getElementById('sf2MatchupContainer');
+      const finalBox = document.getElementById('finalMatchupContainer');
+
+      const team1 = liveTeams[0] || { teamName: "Rank #1 Team" };
+      const team2 = liveTeams[1] || { teamName: "Rank #2 Team" };
+      const team3 = liveTeams[2] || { teamName: "Rank #3 Team" };
+      const team4 = liveTeams[3] || { teamName: "Rank #4 Team" };
+
+      function renderMatchupRow(teamObj, seedText) {
+        return `
+          <div class="flex items-center gap-2">
+            ${renderTeamLogo(teamObj.teamName, "w-8 h-8")}
+            <div class="text-left overflow-hidden">
+              <h5 class="font-black text-xs sm:text-sm text-clubNavy truncate max-w-[120px]">${teamObj.teamName}</h5>
+              <span class="text-[9px] font-bold text-slate-400 block">${seedText}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      if (isLeagueFinished && liveTeams.length >= 4) {
+        lockStatusBadge.className = "text-[10px] font-black px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300";
+        lockStatusBadge.textContent = "⚡ QUALIFIERS LOCKED";
+
+        sf1Status.className = "text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded";
+        sf1Status.textContent = "Confirmed Matchup";
+
+        sf2Status.className = "text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded";
+        sf2Status.textContent = "Confirmed Matchup";
+
+        sf1Box.innerHTML = `
+          ${renderMatchupRow(team1, "Table Rank #1")}
+          <span class="text-xs font-black text-slate-400 px-2">VS</span>
+          ${renderMatchupRow(team4, "Table Rank #4")}
+        `;
+
+        sf2Box.innerHTML = `
+          ${renderMatchupRow(team2, "Table Rank #2")}
+          <span class="text-xs font-black text-slate-400 px-2">VS</span>
+          ${renderMatchupRow(team3, "Table Rank #3")}
+        `;
+
+        const sf1Fix = liveFixtures.find(f => f.round && f.round.toLowerCase().includes('semi') && f.round.includes('1'));
+        const sf2Fix = liveFixtures.find(f => f.round && f.round.toLowerCase().includes('semi') && f.round.includes('2'));
+
+        if (sf1Fix && sf1Fix.status === "Finished" && sf2Fix && sf2Fix.status === "Finished") {
+          finalBox.innerHTML = `
+            <div class="flex items-center justify-center gap-6 py-1">
+              <div class="text-center">
+                ${renderTeamLogo(sf1Fix.teamA, "w-12 h-12 mx-auto mb-1")}
+                <span class="font-black text-sm text-clubNavy block">${sf1Fix.teamA}</span>
+                <span class="text-[9px] text-emerald-600 font-bold">SF 1 Winner</span>
+              </div>
+              <span class="text-base font-black text-amber-600">VS</span>
+              <div class="text-center">
+                ${renderTeamLogo(sf2Fix.teamA, "w-12 h-12 mx-auto mb-1")}
+                <span class="font-black text-sm text-clubNavy block">${sf2Fix.teamA}</span>
+                <span class="text-[9px] text-emerald-600 font-bold">SF 2 Winner</span>
+              </div>
+            </div>
+          `;
+        } else {
+          finalBox.innerHTML = `
+            <h4 class="text-sm sm:text-base font-black text-clubNavy">Winner Playoff 1 <span class="text-amber-600 mx-1">VS</span> Winner Playoff 2</h4>
+            <span class="text-[11px] text-slate-500 font-semibold block mt-1">Playoffs winners clash for Gold Trophy & Medals</span>
+          `;
+        }
+      } else {
+        lockStatusBadge.className = "text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600";
+        lockStatusBadge.textContent = isLeagueStarted ? "⏳ League Ongoing (Tentative Ranks)" : "⏳ Awaiting League Matches";
+
+        sf1Status.textContent = "Rank #1 vs Rank #4";
+        sf2Status.textContent = "Rank #2 vs Rank #3";
+
+        sf1Box.innerHTML = `
+          ${renderMatchupRow(team1, isLeagueStarted ? "Current #1" : "Seed 1")}
+          <span class="text-xs font-black text-slate-400 px-2">VS</span>
+          ${renderMatchupRow(team4, isLeagueStarted ? "Current #4" : "Seed 4")}
+        `;
+
+        sf2Box.innerHTML = `
+          ${renderMatchupRow(team2, isLeagueStarted ? "Current #2" : "Seed 2")}
+          <span class="text-xs font-black text-slate-400 px-2">VS</span>
+          ${renderMatchupRow(team3, isLeagueStarted ? "Current #3" : "Seed 3")}
+        `;
+
+        finalBox.innerHTML = `
+          <h4 class="text-sm sm:text-base font-black text-clubNavy">Winner Playoff 1 <span class="text-amber-600 mx-1">VS</span> Winner Playoff 2</h4>
+          <span class="text-[11px] text-slate-500 font-semibold block mt-1">Best of 3 Sets • 21 Points Format</span>
+        `;
+      }
+    }
+
+    // Points Table
+    function renderLivePointsTable() {
+      const fb = window.firebaseData || {};
+      let liveTeams = [...(fb.teams || [])];
+      liveTeams.sort((a, b) => (b.points !== a.points ? b.points - a.points : b.diff - a.diff));
+
+      const tbody = document.getElementById('pointsTableBody');
+      tbody.innerHTML = '';
+
+      liveTeams.forEach((team, index) => {
+        const rank = index + 1;
+        const isPlayoffs = team.played > 0 && rank <= 4;
+        const diffFormatted = team.diff > 0 ? `+${team.diff}` : `${team.diff}`;
+        const diffColor = team.diff > 0 ? "text-emerald-600 font-bold" : (team.diff < 0 ? "text-rose-500 font-bold" : "text-slate-400");
+
+        tbody.innerHTML += `
+          <tr class="${isPlayoffs ? 'bg-emerald-50/15' : 'hover:bg-slate-50'}">
+            <td class="py-2.5 pl-2 pr-1 text-center font-bold">
+              ${isPlayoffs ? `<span class="w-4 h-4 rounded-full bg-emerald-500 text-white font-black text-[9px] inline-flex items-center justify-center">${rank}</span>` : `<span class="text-slate-400 text-xs">${rank}</span>`}
+            </td>
+            <td class="py-2.5 px-2 font-black text-clubNavy">
+              <div class="flex items-center gap-1.5">
+                ${renderTeamLogo(team.teamName, "w-6 h-6")}
+                <span class="text-xs font-black text-clubNavy truncate max-w-[110px] sm:max-w-none">${team.teamName}</span>
+              </div>
+            </td>
+            <td class="py-2.5 px-1 text-center font-bold text-slate-700 text-xs">${team.played}</td>
+            <td class="py-2.5 px-1 text-center font-black text-emerald-600 text-xs">${team.won}</td>
+            <td class="py-2.5 px-1 text-center font-bold text-rose-500 text-xs">${team.lost}</td>
+            <td class="py-2.5 px-1.5 text-center text-xs ${diffColor}">${diffFormatted}</td>
+            <td class="py-2.5 px-2 text-center font-black text-xs text-clubBlue bg-blue-50/60">${team.points}</td>
+            <td class="py-2.5 pr-2 pl-1 text-center">${isPlayoffs ? `<span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 text-[9px] font-black rounded">Playoffs (Q)</span>` : `<span class="text-slate-300 text-xs">—</span>`}</td>
+          </tr>
+        `;
+      });
+    }
+
+    // Fixtures
+    function renderLiveFixturesSection() {
+      const fb = window.firebaseData || {};
+      const liveFixtures = fb.fixtures || [];
+      const badge = document.getElementById('fixturesBadgeCount');
+      badge.textContent = liveFixtures.length;
+
+      const genSection = document.getElementById('generatedFixturesSection');
+      const genGrid = document.getElementById('generatedFixturesGrid');
+      const defSection = document.getElementById('defaultScheduleSection');
+      const formatBadge = document.getElementById('fixtureFormatBadge');
+
+      if (liveFixtures && liveFixtures.length > 0) {
+        genSection.classList.remove('hidden');
+        defSection.classList.add('hidden');
+        genGrid.innerHTML = '';
+        formatBadge.textContent = liveFixtures[0].format || "Schedule";
+
+        liveFixtures.forEach(f => {
+          genGrid.innerHTML += `
+            <div class="p-3.5 bg-white border-2 border-slate-200 hover:border-clubBlue rounded-2xl shadow-xs transition flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[10px] font-black bg-blue-50 text-clubBlue px-2 py-0.5 rounded-full uppercase tracking-wider">${f.round}</span>
+              </div>
+              
+              <div class="my-2.5 flex items-center justify-between">
+                <div class="flex items-center gap-1.5 flex-1 overflow-hidden">
+                  ${renderTeamLogo(f.teamA, "w-6 h-6")}
+                  <span class="font-black text-xs sm:text-sm text-clubNavy truncate">${f.teamA}</span>
+                </div>
+
+                <span class="px-2 text-slate-400 font-bold text-xs shrink-0">VS</span>
+
+                <div class="flex items-center justify-end gap-1.5 flex-1 overflow-hidden">
+                  <span class="font-black text-xs sm:text-sm text-clubNavy truncate text-right">${f.teamB}</span>
+                  ${renderTeamLogo(f.teamB, "w-6 h-6")}
+                </div>
+              </div>
+
+              <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-semibold">
+                <span class="text-emerald-700 font-bold"><i class="fa-solid fa-clock text-amber-500 mr-1 text-[10px]"></i>${f.time}</span>
+                <span class="px-2 py-0.5 ${f.status === 'Finished' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'} font-bold text-[10px] rounded">${f.status}${f.score ? ' (' + f.score + ')' : ''}</span>
+              </div>
+            </div>
+          `;
+        });
+      } else {
+        genSection.classList.add('hidden');
+        defSection.classList.remove('hidden');
+      }
+    }
+
+    // Teams Cards
+    function renderLiveTeamsCards() {
+      const fb = window.firebaseData || {};
+      const liveTeams = fb.teams || [];
+      const grid = document.getElementById('teamsCardsGrid');
+      grid.innerHTML = '';
+
+      liveTeams.forEach(t => {
+        grid.innerHTML += `
+          <div class="bg-white border-2 border-slate-200 rounded-2xl p-3.5 shadow-sm flex items-center gap-3">
+            <div class="w-11 h-11 shrink-0 flex items-center justify-center">
+              ${renderTeamLogo(t.teamName, "w-11 h-11")}
+            </div>
+            <div class="overflow-hidden">
+              <h4 class="font-black text-xs sm:text-sm text-clubNavy truncate">${t.teamName}</h4>
+              <p class="text-[11px] text-slate-400 truncate">${t.partners}</p>
+              <span class="text-[10px] font-bold text-slate-500 mt-0.5 block">Played: ${t.played} | PTS: ${t.points}</span>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // Players Grid
+    function renderLivePlayersGrid() {
+      const fb = window.firebaseData || {};
+      const livePlayers = fb.players || [];
+      const grid = document.getElementById('playersGrid');
+      grid.innerHTML = '';
+
+      livePlayers.forEach(p => {
+        grid.innerHTML += `
+          <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center gap-2.5 shadow-xs">
+            <div class="w-9 h-9 rounded-lg bg-blue-50 border border-blue-200 text-clubBlue flex items-center justify-center font-bold text-xs shrink-0">🏸</div>
+            <div>
+              <h4 class="font-black text-xs text-clubNavy leading-none">${p.name}</h4>
+              <span class="text-[9px] text-clubOrange font-bold block mt-0.5">${p.role}</span>
+              <p class="text-[9px] text-slate-400 mt-0.5">${p.team} • ${p.hand}</p>
+            </div>
+          </div>
+        `;
+      });
+    }
+  </script>
+
+</body>
+  </html>
