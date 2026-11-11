@@ -170,7 +170,7 @@
 
       <!-- Clean Footer -->
       <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-        <span id="tournSetsHistory" class="font-semibold text-emerald-700 truncate max-w-[260px]">Live feed active</span>
+        <span id="tournSetsHistory" class="font-semibold text-emerald-700 truncate max-w-[260px]">Dates To Be Announced Soon</span>
         <span class="text-emerald-600 font-bold flex items-center gap-1 text-[10px]">
           <i class="fa-solid fa-bolt"></i> Live Score
         </span>
@@ -572,6 +572,8 @@
       if (activeTourn) {
         document.getElementById('dynTournTitle').textContent = activeTourn.name;
         document.getElementById('dynTournDesc').innerHTML = `<strong>${activeTourn.format || 'Round Robin League'}</strong> ➔ Points Table ke <strong>Top Teams Playoffs</strong> me qualify karenge ➔ Grand Final!`;
+        
+        // Dynamically show the date & time set via Calendar/Clock in Admin
         document.getElementById('dynTournDateDetail').textContent = activeTourn.dateDetails || "Dates To Be Announced Soon";
 
         const stage = activeTourn.stage || "Coming Soon";
@@ -695,6 +697,22 @@
         } else {
           historyText.textContent = "Match in progress";
         }
+      } else if (fixtures && fixtures.length > 0 && fixtures.some(f => f.status === 'Live')) {
+        const liveFix = fixtures.find(f => f.status === 'Live');
+        statusBadge.className = "px-2.5 py-0.5 bg-red-50 text-red-600 border border-red-200 text-[10px] font-black rounded-full uppercase tracking-wider inline-flex items-center gap-1.5";
+        statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> LIVE MATCH`;
+        setBadge.textContent = liveFix.round || "Live Match";
+
+        nameA.textContent = liveFix.teamA;
+        nameB.textContent = liveFix.teamB;
+        logoA.innerHTML = renderTeamLogo(liveFix.teamA, "w-full h-full");
+        logoB.innerHTML = renderTeamLogo(liveFix.teamB, "w-full h-full");
+
+        setsA.textContent = "Live";
+        setsB.textContent = "Score";
+        ptsA.textContent = "-";
+        ptsB.textContent = "-";
+        historyText.textContent = `${liveFix.time || 'Match Live Now'}`;
       } else if (fixtures && fixtures.length > 0 && fixtures.some(f => f.status === 'Upcoming')) {
         const upcoming = fixtures.find(f => f.status === 'Upcoming');
         statusBadge.className = "px-2.5 py-0.5 bg-blue-50 text-clubBlue border border-blue-200 text-[10px] font-black rounded-full uppercase tracking-wider inline-flex items-center gap-1.5";
@@ -710,7 +728,7 @@
         setsB.textContent = "Schedule";
         ptsA.textContent = "-";
         ptsB.textContent = "-";
-        historyText.textContent = `${upcoming.time || 'Schedule announced'}`;
+        historyText.textContent = `${upcoming.time || (activeTourn && activeTourn.dateDetails ? activeTourn.dateDetails : 'Dates To Be Announced Soon')}`;
       } else {
         const stage = activeTourn ? (activeTourn.stage || "Coming Soon") : "Coming Soon";
         statusBadge.className = "px-2.5 py-0.5 bg-slate-800 text-amber-400 border border-amber-400/40 text-[10px] font-black rounded-full uppercase tracking-wider inline-flex items-center gap-1.5";
@@ -741,7 +759,7 @@
       liveTeams.sort((a, b) => (b.points !== a.points ? b.points - a.points : b.diff - a.diff));
 
       const rrFixtures = liveFixtures.filter(f => f.format === "Round Robin");
-      const isLeagueFinished = rrFixtures.length > 0 && rrFixtures.every(f => f.status === "Finished");
+      const isLeagueFinished = rrFixtures.length > 0 && rrFixtures.every(f => f.status === "Finished" || f.status === "Match Ended");
       const isLeagueStarted = liveTeams.some(t => t.played > 0);
 
       const lockStatusBadge = document.getElementById('playoffsAutoLockStatus');
@@ -793,7 +811,7 @@
         const sf1Fix = liveFixtures.find(f => f.round && f.round.toLowerCase().includes('semi') && f.round.includes('1'));
         const sf2Fix = liveFixtures.find(f => f.round && f.round.toLowerCase().includes('semi') && f.round.includes('2'));
 
-        if (sf1Fix && sf1Fix.status === "Finished" && sf2Fix && sf2Fix.status === "Finished") {
+        if (sf1Fix && (sf1Fix.status === "Finished" || sf1Fix.status === "Match Ended") && sf2Fix && (sf2Fix.status === "Finished" || sf2Fix.status === "Match Ended")) {
           finalBox.innerHTML = `
             <div class="flex items-center justify-center gap-6 py-1">
               <div class="text-center">
@@ -878,7 +896,7 @@
       });
     }
 
-    // Fixtures
+    // Fixtures - With Live, Match Ended, Upcoming Dynamic Badges
     function renderLiveFixturesSection() {
       const fb = window.firebaseData || {};
       const liveFixtures = fb.fixtures || [];
@@ -897,10 +915,44 @@
         formatBadge.textContent = liveFixtures[0].format || "Schedule";
 
         liveFixtures.forEach(f => {
+          const isLive = f.status === 'Live';
+          const isEnded = f.status === 'Match Ended' || f.status === 'Finished';
+
+          let statusBadgeTop = '';
+          let cardBorderClass = 'border-slate-200 hover:border-clubBlue bg-white';
+
+          if (isLive) {
+            cardBorderClass = 'border-rose-400 bg-rose-50/20 shadow-md ring-2 ring-rose-400/40';
+            statusBadgeTop = `
+              <span class="px-2.5 py-0.5 bg-rose-100 text-rose-600 border border-rose-300 font-black text-[10px] rounded-full uppercase inline-flex items-center gap-1.5 shadow-xs">
+                <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                <span>🔴 LIVE</span>
+              </span>
+            `;
+          } else if (isEnded) {
+            cardBorderClass = 'border-slate-200 bg-slate-50/70';
+            statusBadgeTop = `
+              <span class="px-2 py-0.5 bg-slate-200/90 text-slate-600 border border-slate-300 font-black text-[10px] rounded-full uppercase inline-flex items-center gap-1">
+                <i class="fa-solid fa-flag-checkered text-slate-500 text-[9px]"></i>
+                <span>⚪ MATCH ENDED</span>
+              </span>
+            `;
+          } else {
+            statusBadgeTop = `
+              <span class="px-2 py-0.5 bg-blue-50 text-clubBlue border border-blue-200 font-bold text-[10px] rounded-full uppercase inline-flex items-center gap-1">
+                <i class="fa-solid fa-clock text-blue-500 text-[9px]"></i>
+                <span>⏳ UPCOMING</span>
+              </span>
+            `;
+          }
+
           genGrid.innerHTML += `
-            <div class="p-3.5 bg-white border-2 border-slate-200 hover:border-clubBlue rounded-2xl shadow-xs transition flex flex-col justify-between">
+            <div class="p-3.5 ${cardBorderClass} rounded-2xl shadow-xs transition flex flex-col justify-between relative overflow-hidden">
+              ${isLive ? '<div class="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-rose-500 via-orange-500 to-rose-500 animate-pulse"></div>' : ''}
+              
               <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[10px] font-black bg-blue-50 text-clubBlue px-2 py-0.5 rounded-full uppercase tracking-wider">${f.round}</span>
+                <span class="text-[10px] font-black bg-blue-50 text-clubBlue px-2 py-0.5 rounded-full uppercase tracking-wider">${f.round} • ${f.court || 'Court'}</span>
+                ${statusBadgeTop}
               </div>
               
               <div class="my-2.5 flex items-center justify-between">
@@ -919,7 +971,9 @@
 
               <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-semibold">
                 <span class="text-emerald-700 font-bold"><i class="fa-solid fa-clock text-amber-500 mr-1 text-[10px]"></i>${f.time}</span>
-                <span class="px-2 py-0.5 ${f.status === 'Finished' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'} font-bold text-[10px] rounded">${f.status}${f.score ? ' (' + f.score + ')' : ''}</span>
+                <span class="font-bold text-[10px] ${isLive ? 'text-rose-600 animate-pulse' : isEnded ? 'text-emerald-700 font-mono' : 'text-slate-400'}">
+                  ${f.score ? 'Score: ' + f.score : (isLive ? '🔴 Scoring Live...' : 'Scheduled')}
+                </span>
               </div>
             </div>
           `;
