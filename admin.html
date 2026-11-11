@@ -29,6 +29,11 @@
   <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="time"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
+    }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen selection:bg-clubOrange selection:text-white pb-20">
@@ -121,7 +126,7 @@
       <div class="flex items-center justify-between">
         <div>
           <h2 class="text-xl sm:text-2xl font-black text-white">Tournaments & Posters Manager</h2>
-          <p class="text-xs text-slate-400 mt-0.5">Tournament ka <strong>Logo aur Poster Image</strong> daalein, stage set karein.</p>
+          <p class="text-xs text-slate-400 mt-0.5">Tournament ka <strong>Logo, Calendar Date, Clock Time aur Poster</strong> manage karein.</p>
         </div>
         <button onclick="openNewTournamentModal()" class="px-4 py-2 bg-clubOrange hover:bg-orange-600 text-slate-950 font-black text-xs rounded-xl shadow transition flex items-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-plus"></i>
@@ -143,16 +148,25 @@
                 <span id="activeTournStageBadge" class="px-3 py-0.5 bg-slate-800 text-amber-400 border border-amber-400/30 text-[10px] font-black rounded-full uppercase tracking-wider">
                   ⏳ COMING SOON
                 </span>
-                <span class="text-[11px] text-slate-300 font-semibold" id="activeTournDateText">Dates To Be Announced</span>
+                <span class="text-[11px] text-amber-300 font-bold flex items-center gap-1" id="activeTournDateText">
+                  <i class="fa-solid fa-calendar-days text-[10px]"></i> Dates To Be Announced
+                </span>
               </div>
               <h3 id="activeTournName" class="text-xl sm:text-2xl font-black text-white mt-1.5 font-serif">Mandapada Winter Championship 2026</h3>
               <p id="activeTournDesc" class="text-xs text-slate-300 mt-0.5">Round Robin League ➔ Top 4 Playoffs ➔ Grand Final</p>
             </div>
           </div>
 
-          <div class="bg-white/10 p-3 rounded-2xl text-center min-w-[150px] border border-white/20">
-            <span class="text-[10px] text-amber-300 font-bold uppercase block">Entry Fee</span>
-            <span id="activeTournFee" class="text-lg font-black text-white">₹250 / Player</span>
+          <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+            <div class="bg-white/10 p-3 rounded-2xl text-center min-w-[140px] border border-white/20">
+              <span class="text-[10px] text-amber-300 font-bold uppercase block">Entry Fee</span>
+              <span id="activeTournFee" class="text-lg font-black text-white">₹250 / Player</span>
+            </div>
+            
+            <button onclick="editActiveTournament()" class="px-3.5 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-2xl shadow-lg transition flex items-center gap-1.5 cursor-pointer shrink-0">
+              <i class="fa-solid fa-calendar-check"></i>
+              <span>Set Date & Time</span>
+            </button>
           </div>
         </div>
       </div>
@@ -161,6 +175,23 @@
       <div class="space-y-3">
         <h3 class="font-black text-sm text-slate-300 uppercase tracking-wider">All Tournaments & Posters</h3>
         <div id="tournamentsListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </div>
+
+      <!-- Past Tournament History & Clear History Card -->
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-xl space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-black text-sm text-white uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-clock-rotate-left text-amber-400"></i> Past Tournament History
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Purane completed tournaments aur champions ka record (tournament page par dikhta hai).</p>
+          </div>
+          <button onclick="clearTournamentHistory()" class="px-3.5 py-1.5 bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-bold rounded-xl hover:bg-rose-500 hover:text-white transition cursor-pointer flex items-center gap-1.5">
+            <i class="fa-solid fa-trash-can"></i>
+            <span>Clear History</span>
+          </button>
+        </div>
+        <div id="tournamentHistoryList" class="space-y-2.5"></div>
       </div>
     </section>
 
@@ -207,7 +238,7 @@
         <div class="grid grid-cols-2 gap-3 sm:gap-6 py-5 items-center">
           <!-- Team A -->
           <div class="bg-slate-950 border-2 border-blue-500/40 rounded-3xl p-4 sm:p-5 text-center flex flex-col justify-between">
-            <div class="flex flex-col items-center">
+            <div class="flex items-center flex-col">
               <div id="liveLogoBoxA" class="w-12 h-12 rounded-full overflow-hidden mb-1.5 border-2 border-blue-400 flex items-center justify-center bg-slate-800"></div>
               <h4 id="liveNameA" class="font-black text-xs sm:text-base text-white truncate max-w-[130px]">Team A</h4>
               <span class="text-[10px] text-blue-400 font-bold block mt-0.5">Sets: <span id="liveSetsA">0</span></span>
@@ -221,7 +252,7 @@
 
           <!-- Team B -->
           <div class="bg-slate-950 border-2 border-amber-500/40 rounded-3xl p-4 sm:p-5 text-center flex flex-col justify-between">
-            <div class="flex flex-col items-center">
+            <div class="flex items-center flex-col">
               <div id="liveLogoBoxB" class="w-12 h-12 rounded-full overflow-hidden mb-1.5 border-2 border-amber-400 flex items-center justify-center bg-slate-800"></div>
               <h4 id="liveNameB" class="font-black text-xs sm:text-base text-white truncate max-w-[130px]">Team B</h4>
               <span class="text-[10px] text-amber-400 font-bold block mt-0.5">Sets: <span id="liveSetsB">0</span></span>
@@ -277,7 +308,7 @@
     <section id="tabGenerator" class="adm-sec hidden space-y-6">
       <div>
         <h2 class="text-xl sm:text-2xl font-black text-white">Match Schedule & Fixture Generator</h2>
-        <p class="text-xs text-slate-400 mt-0.5">15-minute break ke sath matches schedule karein.</p>
+        <p class="text-xs text-slate-400 mt-0.5">5-10 minute break ke sath matches schedule karein.</p>
       </div>
 
       <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-xl">
@@ -317,15 +348,22 @@
               <input type="number" id="genMatchDuration" value="35" min="20" max="60" required class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-clubOrange" />
             </div>
             <div>
-              <label class="block font-bold text-rose-400 mb-1">Break Time</label>
-              <input type="text" value="15 Minutes (Fixed)" readonly class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-3 py-2 text-xs font-bold text-slate-400" />
+              <label class="block font-bold text-rose-400 mb-1">Break Time (Between Matches)</label>
+              <select id="genBreakTime" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-clubOrange">
+                <option value="5">5 Minutes Break</option>
+                <option value="6">6 Minutes Break</option>
+                <option value="7">7 Minutes Break</option>
+                <option value="8">8 Minutes Break</option>
+                <option value="9">9 Minutes Break</option>
+                <option value="10" selected>10 Minutes Break</option>
+              </select>
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
             <div>
               <label class="block font-bold text-slate-400 mb-1">Start Date (Optional)</label>
-              <input type="date" id="genStartDate" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white" />
+              <input type="date" id="genStartDate" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white cursor-pointer" />
             </div>
             <div>
               <label class="block font-bold text-slate-400 mb-1">Venue</label>
@@ -507,10 +545,40 @@
           <label class="block font-bold text-slate-400 mb-1">Tournament Poster / Banner URL</label>
           <input type="url" id="tournBannerInput" placeholder="https://... (Paste Poster Link)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs" />
         </div>
-        <div>
-          <label class="block font-bold text-slate-400 mb-1">Date Status Text</label>
-          <input type="text" id="tournDateStatusInput" required placeholder="e.g. Dates To Be Announced Soon" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white" />
+
+        <!-- CALENDAR DATE & CLOCK TIME PICKERS -->
+        <div class="p-3 bg-slate-950 border border-slate-800 rounded-2xl space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-amber-400 flex items-center gap-1.5 text-xs">
+              <i class="fa-solid fa-calendar-days"></i> Tournament Schedule
+            </span>
+            <label class="inline-flex items-center gap-1.5 text-[11px] text-slate-400 font-bold cursor-pointer">
+              <input type="checkbox" id="tournTbdCheckbox" onchange="toggleTournDateInputs(this.checked)" class="w-3.5 h-3.5 rounded text-clubOrange focus:ring-0" />
+              <span>To Be Announced</span>
+            </label>
+          </div>
+
+          <div id="tournPickerGroup" class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 mb-1">
+                <i class="fa-solid fa-calendar text-clubOrange mr-1"></i> Pick Date (Calendar)
+              </label>
+              <input type="date" id="tournDateInput" onchange="updateTournDatePreview()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-2 text-white text-xs font-bold focus:outline-none focus:border-amber-400 cursor-pointer" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 mb-1">
+                <i class="fa-solid fa-clock text-amber-400 mr-1"></i> Pick Time (Clock)
+              </label>
+              <input type="time" id="tournTimeInput" onchange="updateTournDatePreview()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-2 text-white text-xs font-bold focus:outline-none focus:border-amber-400 cursor-pointer" />
+            </div>
+          </div>
+
+          <div id="tournDatePreviewBox" class="p-2 bg-slate-900/80 rounded-xl text-center border border-slate-800/80">
+            <span class="text-[9px] uppercase tracking-wider text-slate-400 block font-bold">Preview on Website:</span>
+            <span id="tournDatePreviewText" class="text-xs font-black text-emerald-400 block mt-0.5 font-mono">Dates To Be Announced Soon</span>
+          </div>
         </div>
+
         <div>
           <label class="block font-bold text-slate-400 mb-1">Entry Fee Per Player (₹)</label>
           <input type="number" id="tournFeeInput" required value="250" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold" />
@@ -618,6 +686,7 @@
     let fixtures = [];
     let settings = DEF_SETTINGS;
     let payments = [];
+    let tournamentHistory = [];
     let rulesText = "1. Doubles Format\n2. 21 Points Format";
 
     function handleLogin(e) {
@@ -707,6 +776,12 @@
       renderFixturesSelectorQueue();
     });
 
+    db.ref('tournament_history').on('value', snap => {
+      const val = snap.val();
+      tournamentHistory = val ? Object.entries(val).map(([k, v]) => ({ key: k, ...v })) : [];
+      renderTournamentHistoryList();
+    });
+
     db.ref('rules').on('value', snap => {
       rulesText = snap.val() || "1. Doubles Format\n2. 21 Points Format";
       const ruleField = document.getElementById('rulesContent');
@@ -722,6 +797,7 @@
     function initCMS() {
       document.getElementById('genTeamCount').textContent = teams.length;
       renderTournamentsList();
+      renderTournamentHistoryList();
       renderFixturesSelectorQueue();
       renderAdminTablePreview();
       renderTeamsList();
@@ -754,7 +830,7 @@
         document.getElementById('activeTournName').textContent = activeTourn.name;
         document.getElementById('activeTournDesc').textContent = `${activeTourn.format} • ${activeTourn.season}`;
         document.getElementById('activeTournFee').textContent = `₹${activeTourn.entryFeePlayer} / Player`;
-        document.getElementById('activeTournDateText').textContent = activeTourn.dateDetails || "Dates To Be Announced";
+        document.getElementById('activeTournDateText').innerHTML = `<i class="fa-solid fa-calendar-days text-[10px]"></i> ${activeTourn.dateDetails || "Dates To Be Announced"}`;
         document.getElementById('activeTournStageBadge').innerHTML = getStageBadgeHtml(activeTourn.stage || "Coming Soon");
 
         if (activeTourn.tournBanner && activeTourn.tournBanner.trim().length > 0) {
@@ -800,7 +876,7 @@
 
               ${!t.tournBanner ? `<h4 class="font-black text-sm text-white">${t.name}</h4>` : ''}
               <p class="text-xs text-slate-400 mt-1">${t.format} • ${t.season}</p>
-              <span class="text-xs text-amber-400 font-bold block mt-1">Fee: ₹${t.entryFeePlayer} / Player • <span class="text-slate-300">${t.dateDetails || 'No date set'}</span></span>
+              <span class="text-xs text-amber-400 font-bold block mt-1">Fee: ₹${t.entryFeePlayer} / Player • <span class="text-emerald-400">${t.dateDetails || 'Dates To Be Announced'}</span></span>
             </div>
 
             <div class="p-4 pt-0 space-y-2">
@@ -825,6 +901,57 @@
       });
     }
 
+    function editActiveTournament() {
+      const activeTourn = tournaments.find(t => t.status === "Active") || tournaments[0];
+      if (activeTourn) {
+        editTournamentModal(activeTourn.id);
+      } else {
+        openNewTournamentModal();
+      }
+    }
+
+    function renderTournamentHistoryList() {
+      const container = document.getElementById('tournamentHistoryList');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (tournamentHistory.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-500 py-3 text-center">Abhi tak koi tournament history record nahi hai.</p>`;
+        return;
+      }
+
+      tournamentHistory.forEach(h => {
+        container.innerHTML += `
+          <div class="p-3 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-between text-xs">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-black text-amber-400">${h.tournamentName || 'Tournament'}</span>
+                <span class="text-[10px] text-slate-400 font-mono">${h.season || ''} • ${h.dateCompleted || ''}</span>
+              </div>
+              <p class="text-slate-300 mt-1">🏆 Champion: <strong class="text-emerald-400">${h.champion}</strong> (${h.championPartners || ''}) | 🥈 Runners-Up: ${h.runners} (${h.runnersPartners || ''})</p>
+              <span class="text-[10px] text-slate-400 block mt-0.5 font-mono">Final Score: ${h.finalScore || 'N/A'}</span>
+            </div>
+            <button onclick="deleteSingleHistory('${h.key}')" class="text-slate-500 hover:text-rose-400 p-2 transition" title="Delete this record">
+              <i class="fa-solid fa-trash text-xs"></i>
+            </button>
+          </div>
+        `;
+      });
+    }
+
+    function deleteSingleHistory(key) {
+      if (confirm("Kya aap sach me is tournament history record ko delete karna chahte hain?")) {
+        db.ref('tournament_history/' + key).remove();
+      }
+    }
+
+    function clearTournamentHistory() {
+      if (confirm("⚠️ Kya aap sach me saari Tournament History delete/clear karna chahte hain? Yeh record Tournament page se bhi hat jayega!")) {
+        db.ref('tournament_history').remove();
+        alert("✅ Tournament History saaf (clear) ho gayi!");
+      }
+    }
+
     function updateTournamentStage(id, newStage) {
       const t = tournaments.find(x => x.id === id);
       if (t) {
@@ -834,13 +961,73 @@
       }
     }
 
+    /* ====================================================
+       DATE & TIME PICKER FORMATTER HELPERS
+    ==================================================== */
+    function formatSelectedDateTime(dateVal, timeVal) {
+      if (!dateVal) return "Dates To Be Announced Soon";
+      
+      const [year, month, day] = dateVal.split('-').map(Number);
+      const d = new Date(year, month - 1, day);
+      
+      const dateStr = d.toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+
+      if (timeVal) {
+        let [h, m] = timeVal.split(':').map(Number);
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12 || 12;
+        const mStr = m < 10 ? '0' + m : m;
+        return `${dateStr} • ${h}:${mStr} ${ampm}`;
+      }
+      return dateStr;
+    }
+
+    function toggleTournDateInputs(isTbd) {
+      const dateInput = document.getElementById('tournDateInput');
+      const timeInput = document.getElementById('tournTimeInput');
+      const group = document.getElementById('tournPickerGroup');
+
+      if (isTbd) {
+        dateInput.disabled = true;
+        timeInput.disabled = true;
+        group.classList.add('opacity-40', 'pointer-events-none');
+      } else {
+        dateInput.disabled = false;
+        timeInput.disabled = false;
+        group.classList.remove('opacity-40', 'pointer-events-none');
+      }
+      updateTournDatePreview();
+    }
+
+    function updateTournDatePreview() {
+      const isTbd = document.getElementById('tournTbdCheckbox').checked;
+      const previewText = document.getElementById('tournDatePreviewText');
+      const dateVal = document.getElementById('tournDateInput').value;
+      const timeVal = document.getElementById('tournTimeInput').value;
+
+      if (isTbd || !dateVal) {
+        previewText.textContent = "Dates To Be Announced Soon";
+        previewText.className = "text-xs font-bold text-amber-400 block mt-0.5";
+      } else {
+        previewText.textContent = formatSelectedDateTime(dateVal, timeVal);
+        previewText.className = "text-xs font-black text-emerald-400 block mt-0.5 font-mono";
+      }
+    }
+
     function openNewTournamentModal() {
       document.getElementById('modalTournTitle').textContent = "Organize New Tournament";
       document.getElementById('tournEditId').value = "";
       document.getElementById('tournNameInput').value = "";
       document.getElementById('tournLogoInput').value = "";
       document.getElementById('tournBannerInput').value = "";
-      document.getElementById('tournDateStatusInput').value = "Dates To Be Announced Soon";
+      document.getElementById('tournDateInput').value = "";
+      document.getElementById('tournTimeInput').value = "18:30";
+      document.getElementById('tournTbdCheckbox').checked = true;
+      toggleTournDateInputs(true);
       document.getElementById('tournFeeInput').value = 250;
       document.getElementById('tournStageInput').value = "Coming Soon";
       document.getElementById('modalTournament').classList.remove('hidden');
@@ -848,15 +1035,28 @@
 
     function editTournamentModal(id) {
       const t = tournaments.find(x => x.id === id);
-      document.getElementById('modalTournTitle').textContent = "Edit Tournament";
+      document.getElementById('modalTournTitle').textContent = "Set Date, Clock & Details";
       document.getElementById('tournEditId').value = t.id;
       document.getElementById('tournNameInput').value = t.name;
       document.getElementById('tournLogoInput').value = t.tournLogo || "";
       document.getElementById('tournBannerInput').value = t.tournBanner || "";
-      document.getElementById('tournDateStatusInput').value = t.dateDetails || "";
+
+      if (t.startDate && t.startDate.trim().length > 0) {
+        document.getElementById('tournDateInput').value = t.startDate;
+        document.getElementById('tournTimeInput').value = t.startTime || "18:30";
+        document.getElementById('tournTbdCheckbox').checked = false;
+        toggleTournDateInputs(false);
+      } else {
+        document.getElementById('tournDateInput').value = "";
+        document.getElementById('tournTimeInput').value = "18:30";
+        document.getElementById('tournTbdCheckbox').checked = true;
+        toggleTournDateInputs(true);
+      }
+
       document.getElementById('tournFeeInput').value = t.entryFeePlayer;
       document.getElementById('tournStageInput').value = t.stage || "Coming Soon";
       document.getElementById('tournFormatInput').value = t.format;
+      updateTournDatePreview();
       document.getElementById('modalTournament').classList.remove('hidden');
     }
 
@@ -866,22 +1066,47 @@
       const name = document.getElementById('tournNameInput').value;
       const logoUrl = document.getElementById('tournLogoInput').value || "";
       const bannerUrl = document.getElementById('tournBannerInput').value || "";
-      const dateDetails = document.getElementById('tournDateStatusInput').value;
       const fee = parseInt(document.getElementById('tournFeeInput').value) || 250;
       const stage = document.getElementById('tournStageInput').value;
       const format = document.getElementById('tournFormatInput').value;
 
+      const isTbd = document.getElementById('tournTbdCheckbox').checked;
+      const startDate = isTbd ? "" : document.getElementById('tournDateInput').value;
+      const startTime = isTbd ? "" : document.getElementById('tournTimeInput').value;
+      const dateDetails = (isTbd || !startDate) ? "Dates To Be Announced Soon" : formatSelectedDateTime(startDate, startTime);
+
       if (editId) {
         const t = tournaments.find(x => x.id === parseInt(editId));
-        t.name = name; t.tournLogo = logoUrl; t.tournBanner = bannerUrl; t.dateDetails = dateDetails; t.entryFeePlayer = fee; t.stage = stage; t.format = format;
+        t.name = name;
+        t.tournLogo = logoUrl;
+        t.tournBanner = bannerUrl;
+        t.startDate = startDate;
+        t.startTime = startTime;
+        t.dateDetails = dateDetails;
+        t.entryFeePlayer = fee;
+        t.stage = stage;
+        t.format = format;
       } else {
         const newId = tournaments.length > 0 ? Math.max(...tournaments.map(x=>x.id)) + 1 : 1;
-        tournaments.push({ id: newId, name: name, tournLogo: logoUrl, tournBanner: bannerUrl, dateDetails: dateDetails, season: "Winter Season", entryFeePlayer: fee, stage: stage, format: format, status: "Saved" });
+        tournaments.push({
+          id: newId,
+          name: name,
+          tournLogo: logoUrl,
+          tournBanner: bannerUrl,
+          startDate: startDate,
+          startTime: startTime,
+          dateDetails: dateDetails,
+          season: "Winter Season",
+          entryFeePlayer: fee,
+          stage: stage,
+          format: format,
+          status: "Saved"
+        });
       }
 
       db.ref('tournaments').set(tournaments);
       closeModal('modalTournament');
-      alert("✅ Tournament details, Logo & Poster Firebase me save ho gaye!");
+      alert(`✅ Tournament details save ho gaye!\nDate & Time: "${dateDetails}"`);
     }
 
     function setActiveTournament(id) {
@@ -932,7 +1157,7 @@
       const startTimeVal = document.getElementById('genStartTime').value || "18:30";
       const matchesPerDay = parseInt(document.getElementById('genMatchesPerDay').value) || 2;
       const matchDuration = parseInt(document.getElementById('genMatchDuration').value) || 35;
-      const breakDuration = 15;
+      const breakDuration = parseInt(document.getElementById('genBreakTime').value) || 10;
 
       let matchPairs = [];
 
@@ -1011,7 +1236,7 @@
 
       fixtures = calculatedFixtures;
       db.ref('fixtures').set(fixtures);
-      alert(`🎉 Schedule Calculated Successfully!\n${fixtures.length} Matches schedule ho gaye hain aur Firebase me live save ho gaye.`);
+      alert(`🎉 Schedule Calculated Successfully!\n${fixtures.length} Matches schedule ho gaye hain aur Firebase me live save ho gaye (Break: ${breakDuration} Mins).`);
     }
 
     function renderFixturesPreview() {
@@ -1026,20 +1251,35 @@
       }
 
       fixtures.forEach((f, idx) => {
+        const isLive = f.status === 'Live';
+        const isEnded = f.status === 'Match Ended' || f.status === 'Finished';
+
         container.innerHTML += `
-          <div class="p-3 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-between text-xs">
+          <div class="p-3 bg-slate-950 border ${isLive ? 'border-rose-500/50 bg-rose-950/10' : 'border-slate-800'} rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
             <div>
               <span class="text-[10px] font-bold text-clubOrange uppercase tracking-wider">${f.round} • ${f.court}</span>
               <p class="font-black text-white text-sm mt-0.5">${f.teamA} <span class="text-slate-400 font-normal">vs</span> ${f.teamB}</p>
               <span class="text-[11px] text-emerald-400 font-semibold block mt-0.5"><i class="fa-solid fa-clock mr-1 text-[10px]"></i>${f.time} ${f.score ? '• Score: ' + f.score : ''}</span>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="px-2 py-0.5 ${f.status === 'Finished' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-blue-500/20 text-blue-400'} font-bold text-[10px] rounded">${f.status}</span>
-              <button onclick="removeFixture(${idx})" class="text-slate-500 hover:text-rose-400"><i class="fa-solid fa-trash text-xs"></i></button>
+            <div class="flex items-center gap-2 shrink-0">
+              <select onchange="updateFixtureStatus('${f.id}', this.value)" class="bg-slate-900 border ${isLive ? 'border-rose-500 text-rose-400 font-black' : isEnded ? 'border-slate-700 text-slate-400 font-bold' : 'border-blue-500/50 text-blue-400 font-bold'} rounded-lg px-2.5 py-1 text-[11px] focus:outline-none">
+                <option value="Upcoming" ${f.status === 'Upcoming' ? 'selected' : ''}>⏳ Upcoming</option>
+                <option value="Live" ${isLive ? 'selected' : ''}>🔴 LIVE</option>
+                <option value="Match Ended" ${isEnded ? 'selected' : ''}>⚪ Match Ended</option>
+              </select>
+              <button onclick="removeFixture(${idx})" class="w-7 h-7 rounded bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white transition flex items-center justify-center"><i class="fa-solid fa-trash text-xs"></i></button>
             </div>
           </div>
         `;
       });
+    }
+
+    function updateFixtureStatus(fixId, newStatus) {
+      const fix = fixtures.find(f => f.id === fixId);
+      if (fix) {
+        fix.status = newStatus;
+        db.ref('fixtures').set(fixtures);
+      }
     }
 
     function removeFixture(idx) {
@@ -1074,7 +1314,7 @@
       const badge = document.getElementById('queueCountBadge');
       sel.innerHTML = '';
 
-      const upcomingFixtures = fixtures.filter(f => f.status !== 'Finished');
+      const upcomingFixtures = fixtures.filter(f => f.status !== 'Match Ended' && f.status !== 'Finished');
       badge.textContent = `${upcomingFixtures.length} Matches In Queue`;
 
       if (upcomingFixtures.length === 0) {
@@ -1083,7 +1323,7 @@
       }
 
       upcomingFixtures.forEach(f => {
-        sel.innerHTML += `<option value="${f.id}">${f.time} | ${f.teamA} vs ${f.teamB}</option>`;
+        sel.innerHTML += `<option value="${f.id}">${f.time} | ${f.teamA} vs ${f.teamB} (${f.status})</option>`;
       });
     }
 
@@ -1098,6 +1338,9 @@
       if (!matchFixture) return;
 
       currentScoringFixtureId = fixId;
+
+      matchFixture.status = "Live";
+      db.ref('fixtures').set(fixtures);
 
       let tA = teams.find(t => t.teamName.trim().toLowerCase() === matchFixture.teamA.trim().toLowerCase());
       let tB = teams.find(t => t.teamName.trim().toLowerCase() === matchFixture.teamB.trim().toLowerCase());
@@ -1136,6 +1379,13 @@
 
     function cancelLiveMatch() {
       if (confirm("Live match scoring cancel karni hai?")) {
+        if (currentScoringFixtureId) {
+          const curFix = fixtures.find(f => f.id === currentScoringFixtureId);
+          if (curFix && curFix.status === "Live") {
+            curFix.status = "Upcoming";
+            db.ref('fixtures').set(fixtures);
+          }
+        }
         document.getElementById('liveScoreboardCard').classList.add('hidden');
         document.getElementById('matchSetupCard').classList.remove('hidden');
         liveMatch.active = false;
@@ -1196,7 +1446,7 @@
       document.getElementById('setsSummaryText').textContent = `${liveMatch.teamA.teamName} (${liveMatch.setsA}) - (${liveMatch.setsB}) ${liveMatch.teamB.teamName}`;
 
       if (liveMatch.completedSets.length > 0) {
-        const historyText = liveMatch.completedSets.map(s => `Set ${s.set}: [${s.a} - ${s.b}]`).join('  •  ');
+        const historyText = liveMatch.completedSets.map(s => `Set ${s.set}: [${s.a}-${s.b}]`).join('  •  ');
         document.getElementById('completedSetsScore').textContent = historyText;
       } else {
         document.getElementById('completedSetsScore').textContent = '';
@@ -1249,7 +1499,7 @@
       if (currentScoringFixtureId) {
         const curFix = fixtures.find(f => f.id === currentScoringFixtureId);
         if (curFix) {
-          curFix.status = "Finished";
+          curFix.status = "Match Ended";
           curFix.score = finalScoreString;
           db.ref('fixtures').set(fixtures);
 
@@ -1259,7 +1509,6 @@
         }
       }
 
-      // 📜 AUTO-ARCHIVE GRAND FINAL TO TOURNAMENT HISTORY
       if (isGrandFinalMatch) {
         const activeTourn = tournaments.find(t => t.status === "Active") || tournaments[0];
         const tournName = activeTourn ? activeTourn.name : "Mandapada Championship";
@@ -1279,7 +1528,6 @@
 
         db.ref('tournament_history').push(historyPayload);
 
-        // Mark active tournament as Completed
         if (activeTourn) {
           activeTourn.stage = "Completed";
           db.ref('tournaments').set(tournaments);
@@ -1288,7 +1536,7 @@
 
       db.ref('live_scoring').remove();
 
-      const nextFixture = fixtures.find(f => f.status === "Upcoming" && f.id !== currentScoringFixtureId);
+      const nextFixture = fixtures.find(f => (f.status === "Upcoming" || f.status === "Live") && f.id !== currentScoringFixtureId);
 
       if (nextFixture && !isGrandFinalMatch) {
         alert(`✅ Match Saved to Firebase!\n${winner.teamName} def. ${loser.teamName} (${finalScoreString})\n\n⏭️ Agla Match Load Kiya Jaa Raha Hai:\n${nextFixture.round} (${nextFixture.time}): ${nextFixture.teamA} vs ${nextFixture.teamB}`);
@@ -1297,6 +1545,8 @@
         let nextB = teams.find(t => t.teamName.trim().toLowerCase() === nextFixture.teamB.trim().toLowerCase()) || { id: 992, teamName: nextFixture.teamB, teamLogo: "", played: 0, won: 0, lost: 0, diff: 0, points: 0 };
         
         currentScoringFixtureId = nextFixture.id;
+        nextFixture.status = "Live";
+        db.ref('fixtures').set(fixtures);
         loadMatchIntoLiveBoard(nextA, nextB, nextFixture);
       } else {
         alert(`✅ Grand Final Saved & Archived!\n🏆 Champion: ${winner.teamName}\n🥈 Runners-Up: ${loser.teamName}\n\nYeh tournament ab 'Tournament History' me automatically add ho gaya hai!`);
