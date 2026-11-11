@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="hi" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mandapada Badminton Club</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <!-- Firebase Realtime Database SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            clubNavy: '#0d1f38',
+            clubBlue: '#1e40af',
+            clubSky: '#0284c7',
+            clubGold: '#c89d35',
+            clubOrange: '#ff5722',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .badminton-light-pattern {
+      background-color: #ffffff;
+      background-image: 
+        linear-gradient(to right, rgba(30, 64, 175, 0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(30, 64, 175, 0.035) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(var(--rot, 0deg)); }
+      50% { transform: translateY(-8px) rotate(var(--rot, 0deg)); }
+    }
+    .animate-float-1 { --rot: -8deg; animation: floatSlow 4s ease-in-out infinite; }
+    .animate-float-2 { --rot: 7deg; animation: floatSlow 5s ease-in-out infinite 1s; }
+    .animate-float-3 { --rot: -5deg; animation: floatSlow 4.5s ease-in-out infinite 0.5s; }
+  </style>
+</head>
+<body class="badminton-light-pattern text-slate-800 font-sans min-h-screen selection:bg-clubOrange selection:text-white relative overflow-x-hidden">
+
+  <!-- ================= 1. HEADER ================= -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Logo -->
+        <a href="index.html" class="flex items-center gap-3 group">
+          <img src="https://i.postimg.cc/bw5CNCYV/1000442042-removebg-preview.png" alt="Mandapada Badminton Club" class="w-14 h-14 object-contain group-hover:scale-105 transition-transform" />
+          <div>
+            <span class="font-black text-xl tracking-wider text-clubNavy flex items-center gap-1.5 font-serif">
+              MANDAPADA
+              <span class="w-2 h-2 rounded-full bg-clubOrange"></span>
+            </span>
+            <span class="text-[11px] font-bold tracking-[0.2em] text-clubSky block uppercase">
+              Badminton Club 
+            </span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Menu -->
+        <nav class="hidden md:flex items-center gap-8 text-sm font-bold">
+          <a href="index.html" class="text-clubBlue border-b-2 border-clubBlue pb-1">Home</a>
+          <a href="tournament.html" class="text-slate-600 hover:text-clubBlue transition flex items-center gap-1.5 group">
+            <span>Tournaments</span>
+            <span class="px-1.5 py-0.2 bg-amber-100 text-amber-700 text-[10px] font-extrabold rounded group-hover:bg-amber-200 uppercase">League</span>
+          </a>
+          <a href="#membership" class="text-slate-600 hover:text-clubBlue transition">Membership</a>
+          <a href="#faqs" class="text-slate-600 hover:text-clubBlue transition">FAQs</a>
+          <a href="#contact" class="text-slate-600 hover:text-clubBlue transition">Contact</a>
+        </nav>
+
+        <!-- Right Side CTA Button -->
+        <div class="hidden md:flex items-center gap-3">
+          <a href="#membership" class="bg-gradient-to-r from-clubOrange to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black px-6 py-2.5 rounded-xl text-sm transition shadow-md shadow-orange-500/20 hover:scale-105 flex items-center gap-2">
+            <i class="fa-solid fa-fire text-amber-200"></i>
+            <span>Join Club (<span class="dyn-season-fee"></span>)</span>
+          </a>
+        </div>
+
+        <!-- Mobile Menu Toggle Button -->
+        <div class="flex md:hidden">
+          <button onclick="toggleMenu()" class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 text-clubNavy flex items-center justify-center">
+            <i id="menuIcon" class="fa-solid fa-bars text-lg"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown -->
+    <div id="mobileMenu" class="hidden md:hidden bg-white border-b border-slate-200 px-4 pt-3 pb-6 space-y-3 shadow-lg">
+      <a href="index.html" onclick="toggleMenu()" class="block px-3 py-2 rounded-lg text-clubBlue font-bold bg-blue-50 border-l-4 border-clubBlue">Home</a>
+      <a href="tournament.html" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 font-semibold flex items-center justify-between">
+        <span> Tournaments & Points Table</span>
+      <a href="#membership" onclick="toggleMenu()" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 font-semibold">Membership</a>
+      <a href="#faqs" onclick="toggleMenu()" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 font-semibold">FAQs</a>
+      <a href="#contact" onclick="toggleMenu()" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 font-semibold">Contact</a>
+      <a href="#membership" class="block text-center w-full mt-3 bg-gradient-to-r from-clubOrange to-amber-500 text-white font-black py-3 rounded-xl text-sm shadow-md">
+        <i class="fa-solid fa-fire mr-1"></i> Join Club Now
+      </a>
+    </div>
+  </header>
+
+  <!-- ================= 2. HERO SECTION ================= -->
+  <section id="home" class="relative min-h-[85vh] flex items-center justify-center overflow-hidden py-14">
+    
+    <!-- Watermarks -->
+    <div class="absolute -top-12 -right-12 w-80 h-80 opacity-[0.06] text-clubBlue pointer-events-none -z-10 select-none">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.4 6L12 2 9.6 6H4l3 7.5L5 22l7-3 7 3-2-8.5 3-7.5h-5.6zM12 16.5l-4 1.7 1.2-5.1-1.8-4.6h7.2l-1.8 4.6 1.2 5.1-4-1.7z"/></svg>
+    </div>
+
+    <div class="absolute -bottom-16 -left-16 w-96 h-96 opacity-[0.05] text-clubNavy pointer-events-none -z-10 select-none">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="8" cy="8" rx="5" ry="6" /><line x1="8" y1="2" x2="8" y2="14" /><line x1="4" y1="8" x2="12" y2="8" /><path d="M8 14L2 22M22 2l-6 8" /><ellipse cx="16" cy="8" rx="5" ry="6" /><line x1="16" y1="2" x2="16" y2="14" /><line x1="12" y1="8" x2="20" y2="8" /><path d="M16 14L22 22" /></svg>
+    </div>
+
+    <!-- Floating Badges -->
+    <div class="hidden lg:flex absolute left-8 top-16 items-center gap-2.5 bg-white border-2 border-orange-400/80 px-3.5 py-2 rounded-2xl shadow-xl shadow-orange-500/10 animate-float-1 z-20">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-clubOrange to-amber-400 flex items-center justify-center text-white text-lg shadow-md">🏸</div>
+      <div class="text-left">
+        <span class="block text-[10px] font-black uppercase text-clubOrange tracking-wider leading-none">Doubles Mode</span>
+        <span class="text-xs font-black text-clubNavy">Full Power Matches</span>
+      </div>
+    </div>
+
+    <div class="hidden lg:flex absolute right-10 top-20 items-center gap-2.5 bg-white border-2 border-blue-400/80 px-3.5 py-2 rounded-2xl shadow-xl shadow-blue-500/10 animate-float-2 z-20">
+      <div class="w-9 h-9 rounded-xl bg-blue-50 text-clubBlue border border-blue-200 flex items-center justify-center text-lg">❄️</div>
+      <div class="text-left">
+        <span class="block text-[10px] font-black uppercase text-clubSky tracking-wider leading-none">Winter Season</span>
+        <span class="text-xs font-black text-clubNavy">Nov – Jan Active</span>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="relative z-10 max-w-5xl mx-auto px-4 text-center">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-200 shadow-sm text-clubNavy text-xs font-bold uppercase tracking-wider mb-4">
+        <span class="w-2 h-2 rounded-full bg-clubOrange"></span>
+        <span class="dyn-timings">Daily 7:00 PM – 10:30 PM (Evening Floodlights)</span>
+      </div>
+
+      <h1 class="text-4xl sm:text-6xl md:text-7xl font-black text-clubNavy tracking-tight leading-tight uppercase font-serif">
+        Smash Your Limits <br/>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-clubBlue via-blue-600 to-clubOrange">
+          Rule The Court
+        </span>
+      </h1>
+
+      <!-- ================= CLEAN LIVE SCOREBOARD CARD (FIREBASE REALTIME STREAM) ================= -->
+      <div id="heroLiveScoreCard" class="my-7 max-w-lg mx-auto bg-white/95 backdrop-blur-md border-2 border-slate-200/90 rounded-3xl p-5 sm:p-6 shadow-xl relative overflow-hidden text-left transition-all">
+        
+        <!-- Minimal Clean Top Bar -->
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div class="flex items-center gap-2">
+            <span id="heroLiveStatusBadge" class="px-2.5 py-0.5 bg-slate-800 text-amber-400 border border-amber-400/40 text-[10px] font-black rounded-full uppercase tracking-wider inline-flex items-center gap-1.5">
+              ⏳ COMING SOON
+            </span>
+          </div>
+          <span id="heroSetBadge" class="text-xs font-black text-clubBlue uppercase">LIVE FEED</span>
+        </div>
+
+        <!-- 2 Teams Clash Grid -->
+        <div class="grid grid-cols-5 items-center py-4">
+          <!-- Team A -->
+          <div class="col-span-2 flex flex-col items-center text-center">
+            <div id="heroTeamLogoA" class="w-12 h-12 rounded-full bg-slate-100 border-2 border-blue-200 flex items-center justify-center mb-1 shadow-xs overflow-hidden">
+              ⚡
+            </div>
+            <h4 id="heroTeamNameA" class="font-black text-xs sm:text-sm text-clubNavy truncate max-w-[120px]">Team 1</h4>
+            <span id="heroTeamSetsA" class="text-[10px] font-bold text-clubBlue mt-0.5">Sets: 0</span>
+          </div>
+
+          <!-- Score Display -->
+          <div class="col-span-1 flex flex-col items-center justify-center">
+            <div class="flex items-center gap-1 font-mono text-3xl sm:text-4xl font-black text-clubNavy">
+              <span id="heroLivePtsA" class="text-clubBlue">0</span>
+              <span class="text-slate-300 text-2xl font-sans">:</span>
+              <span id="heroLivePtsB" class="text-clubOrange">0</span>
+            </div>
+            <span id="heroLiveCenterLabel" class="text-[10px] text-slate-400 font-bold uppercase mt-1">SCORE</span>
+          </div>
+
+          <!-- Team B -->
+          <div class="col-span-2 flex flex-col items-center text-center">
+            <div id="heroTeamLogoB" class="w-12 h-12 rounded-full bg-slate-100 border-2 border-orange-200 flex items-center justify-center mb-1 shadow-xs overflow-hidden">
+              👑
+            </div>
+            <h4 id="heroTeamNameB" class="font-black text-xs sm:text-sm text-clubNavy truncate max-w-[120px]">Team 2</h4>
+            <span id="heroTeamSetsB" class="text-[10px] font-bold text-clubOrange mt-0.5">Sets: 0</span>
+          </div>
+        </div>
+
+        <!-- Clean Footer -->
+        <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+          <span id="heroSetsHistory" class="font-semibold text-emerald-700 truncate max-w-[260px]">Live feed active</span>
+          <span class="text-emerald-600 font-bold flex items-center gap-1 text-[10px]">
+            <i class="fa-solid fa-bolt"></i> Live Score
+          </span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mt-6">
+        <a href="#membership" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-clubOrange to-amber-500 hover:from-orange-600 text-white font-black rounded-xl shadow-lg shadow-orange-500/25 hover:scale-105 transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-id-card"></i>
+          <span>Join Seasonal Pass </span>
+        </a>
+        
+        <a href="tournament.html" class="w-full sm:w-auto px-8 py-3.5 bg-white hover:bg-slate-50 text-clubNavy font-bold rounded-xl border border-slate-300 hover:border-clubBlue shadow-sm transition flex items-center justify-center gap-2 hover:scale-105">
+          <i class="fa-solid fa-trophy text-amber-500"></i>
+          <span>View Tournament Points Table</span>
+        </a>
+      </div>
+
+      <!-- Highlights Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl mx-auto mt-12 pt-8 border-t border-slate-200">
+        <div class="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm text-center">
+          <div class="w-9 h-9 mx-auto mb-2 bg-blue-50 text-clubBlue rounded-xl flex items-center justify-center">
+            <i class="fa-solid fa-medal text-xs"></i>
+          </div>
+          <p class="text-2xl font-black text-clubNavy">Winter Club</p>
+          <span class="text-xs text-slate-500 font-semibold block mt-0.5">Badminton Arena</span>
+        </div>
+
+        <div class="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm text-center">
+          <div class="w-9 h-9 mx-auto mb-2 bg-orange-50 text-clubOrange rounded-xl flex items-center justify-center">
+            <i class="fa-solid fa-users text-xs"></i>
+          </div>
+          <p class="text-2xl font-black text-clubOrange">20+ Members</p>
+          <span class="text-xs text-slate-500 font-semibold block mt-0.5">50+ Active Players</span>
+        </div>
+
+        <div class="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm text-center">
+          <div class="w-9 h-9 mx-auto mb-2 bg-amber-50 text-clubGold rounded-xl flex items-center justify-center">
+            <i class="fa-solid fa-clock text-xs"></i>
+          </div>
+          <p class="text-2xl font-black text-clubGold">7 - 10:30 PM</p>
+          <span class="text-xs text-slate-500 font-semibold block mt-0.5">Regular Club Play</span>
+        </div>
+
+        <div class="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm text-center">
+          <div class="w-9 h-9 mx-auto mb-2 bg-sky-50 text-clubSky rounded-xl flex items-center justify-center">
+            <i class="fa-solid fa-heart-pulse text-xs"></i>
+          </div>
+          <p class="text-2xl font-black text-clubSky">All Ages</p>
+          <span class="text-xs text-slate-500 font-semibold block mt-0.5">Youth & Seniors</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= 3. TOURNAMENT TEASER BANNER ================= -->
+  <section class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-clubOrange rounded-3xl p-8 sm:p-12 text-slate-950 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-1 bg-slate-950 text-white text-[11px] font-black rounded-full uppercase tracking-wider">
+            Doubles
+          </span>
+          <span class="px-3 py-1 bg-white/30 text-slate-950 text-[11px] font-black rounded-full">
+            Entry Fee: <span class="dyn-entry-fee">₹250</span> / Player
+          </span>
+        </div>
+        <h3 id="teaserTournName" class="text-3xl sm:text-4xl font-black mt-2 font-serif text-white">
+          Mandapada Doubles Championship 2026
+        </h3>
+        <p class="text-slate-950 font-semibold text-sm sm:text-base mt-2 max-w-xl leading-relaxed">
+          Round Robin League ➔ Top Teams Playoffs ➔ Grand Final! Live Points Table, match fixtures aur rules dekhne ke liye tournament portal open karein.
+        </p>
+      </div>
+
+      <a href="tournament.html" class="px-8 py-4 bg-slate-950 hover:bg-slate-900 text-white font-black rounded-2xl text-sm transition shadow-lg flex items-center gap-2 whitespace-nowrap hover:scale-105">
+        <span>Open Points Table & Draws</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- ================= 4. MEMBERSHIP & FEES ================= -->
+  <section id="membership" class="py-16 bg-slate-50/80 border-t border-b border-slate-200 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="text-xs font-bold text-clubBlue uppercase tracking-widest">Club Membership</span>
+        <h2 class="text-3xl sm:text-4xl font-black text-clubNavy font-serif mt-1">
+          Membership & Shuttle Fees
+        </h2>
+        <p class="text-slate-600 text-sm mt-2">
+          Hamare club me sirf <strong class="dyn-season-fee">₹500</strong> Seasonal Membership hoti hai. Iske alawa koi extra fees charge nahi ki jaati hai.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        
+        <!-- Seasonal Membership -->
+        <div class="bg-white border-2 border-clubOrange rounded-3xl p-6 sm:p-8 shadow-xl relative flex flex-col justify-between">
+          <span class="absolute -top-3 right-6 bg-clubOrange text-white text-[10px] font-black uppercase px-3 py-1 rounded-full shadow">
+            Official Pass
+          </span>
+          <div>
+            <span class="text-xs font-bold text-clubOrange uppercase tracking-wider block">Winter Season Pass (Nov – Jan)</span>
+            <h3 class="text-2xl sm:text-3xl font-black text-clubNavy mt-1">Seasonal Membership</h3>
+            
+            <div class="my-5">
+              <span class="text-4xl sm:text-5xl font-black text-clubNavy dyn-season-fee">₹500</span>
+              <span class="text-xs text-slate-500 font-semibold block mt-1">/ Pura Winter Season (Ek Hi Baar Dena Hai)</span>
+            </div>
+
+            <ul class="text-xs sm:text-sm text-slate-600 space-y-2.5 mb-6">
+              <li class="flex items-center gap-2.5"><i class="fa-solid fa-check text-emerald-500"></i> Pure winter season (Nov - Jan) arena access</li>
+              <li class="flex items-center gap-2.5"><i class="fa-solid fa-check text-emerald-500"></i> Daily <span class="dyn-timings">7:00 PM – 10:30 PM</span> evening floodlights matches</li>
+              <li class="flex items-center gap-2.5"><i class="fa-solid fa-check text-emerald-500"></i> Official Club registration</li>
+              <li class="flex items-center gap-2.5"><i class="fa-solid fa-check text-emerald-500"></i> No monthly charges, no hidden fees</li>
+            </ul>
+          </div>
+
+          <button onclick="openPaymentModalFromButton('season')" class="w-full py-3.5 bg-gradient-to-r from-clubOrange to-amber-500 hover:from-orange-600 text-white font-black text-xs sm:text-sm rounded-xl shadow-lg shadow-orange-500/25 transition cursor-pointer flex items-center justify-center gap-2 active:scale-95">
+            <i class="fa-solid fa-qrcode"></i>
+            <span>Join Seasonal Pass </span>
+          </button>
+        </div>
+
+        <!-- Shuttle Fee Contribution -->
+        <div class="bg-white border-2 border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col justify-between">
+          <div>
+            <span class="text-xs font-bold text-clubBlue uppercase tracking-wider block">Regular Play Expense</span>
+            <h3 class="text-2xl sm:text-3xl font-black text-clubNavy mt-1">Shuttle Contribution</h3>
+            
+            <div class="my-5">
+              <span class="text-4xl sm:text-5xl font-black text-clubNavy dyn-shuttle-fee">₹50</span>
+              <span class="text-xs text-slate-500 font-semibold block mt-1">/ Har 2 Hafte Me Ek Baar (Bi-Weekly)</span>
+            </div>
+
+            <ul class="text-xs sm:text-sm text-slate-600 space-y-2.5 mb-6">
+              <li class="flex items-center gap-2.5"><i class="fa-solid fa-shuttlecock text-clubBlue"></i> Har 2 hafte me sirf <span class="dyn-shuttle-fee">₹50</span> dena hota hai</li>
+              <li class="flex items-center gap-2.5"><i class="fa-solid fa-check text-emerald-500"></i> Standard feather shuttlecocks ka regular stock</li>
+              <li class="flex items-center gap-2.5"><i class="fa-solid fa-check text-emerald-500"></i> Sabhi active players aapas me share karte hain</li>
+            </ul>
+          </div>
+
+          <button onclick="openPaymentModalFromButton('shuttle')" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm rounded-xl shadow transition cursor-pointer flex items-center justify-center gap-2 active:scale-95">
+            <i class="fa-solid fa-shuttlecock text-clubGold"></i>
+            <span>Pay Shuttle Fee </span>
+          </button>
+        </div>
+
+      </div>
+
+      <div class="mt-8 max-w-2xl mx-auto p-4 bg-blue-50/70 border border-blue-200 rounded-2xl text-center text-xs text-slate-600 font-medium">
+        <i class="fa-solid fa-circle-check text-clubBlue mr-1 text-sm"></i>
+        <span><strong>Clear Policy:</strong> Club me sirf <span class="dyn-season-fee">₹500</span> seasonal membership aur har 2 hafte me <span class="dyn-shuttle-fee">₹50</span> shuttle contribution lagta hai. Tournament ka entry fee (<span class="dyn-entry-fee">₹250</span>/player) alag rehta hai.</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= 5. FAQS ================= -->
+  <section id="faqs" class="py-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-10">
+      <span class="text-xs font-bold text-clubBlue uppercase tracking-widest">Aapke Sawaal</span>
+      <h2 class="text-3xl sm:text-4xl font-black text-clubNavy font-serif mt-1">
+        Frequently Asked Questions
+      </h2>
+      <p class="text-slate-500 text-sm mt-1">Mandapada Badminton Club se jude aam sawaal aur unke jawaab.</p>
+    </div>
+
+    <div class="space-y-3">
+      
+      <div class="bg-white border-2 border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+        <button onclick="toggleFaq(1)" class="w-full p-4 sm:p-5 text-left font-black text-sm sm:text-base text-clubNavy flex items-center justify-between gap-4 cursor-pointer">
+          <span>1. Club Membership Fees kitni hai aur kab tak valid hai?</span>
+          <i id="faqIcon-1" class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform"></i>
+        </button>
+        <div id="faqAnswer-1" class="hidden px-5 pb-5 text-xs sm:text-sm text-slate-600 border-t border-slate-100 pt-3 leading-relaxed">
+          Hamare club me pure winter season (November se January) ki <strong>Seasonal Membership sirf <span class="dyn-season-fee">₹500</span></strong> hai. Match khelne ke liye har 2 hafte me sirf <span class="dyn-shuttle-fee">₹50</span> shuttle contribution dena hota hai.
+        </div>
+      </div>
+
+      <div class="bg-white border-2 border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+        <button onclick="toggleFaq(2)" class="w-full p-4 sm:p-5 text-left font-black text-sm sm:text-base text-clubNavy flex items-center justify-between gap-4 cursor-pointer">
+          <span>2. Tournament Entry Fee kitni hai aur format kya hai?</span>
+          <i id="faqIcon-2" class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform"></i>
+        </button>
+        <div id="faqAnswer-2" class="hidden px-5 pb-5 text-xs sm:text-sm text-slate-600 border-t border-slate-100 pt-3 leading-relaxed">
+          Tournament me entry fee <strong><span class="dyn-entry-fee">₹250</span> per player (yani ₹500 per pair/team)</strong> hoti hai. Sabhi registered doubles teams hissa leti hain aur Round Robin League ke baad Top Teams Playoffs aur fir Grand Final khelti hain.
+        </div>
+      </div>
+
+      <div class="bg-white border-2 border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+        <button onclick="toggleFaq(3)" class="w-full p-4 sm:p-5 text-left font-black text-sm sm:text-base text-clubNavy flex items-center justify-between gap-4 cursor-pointer">
+          <span>3. Regular club me khelne ka timing kya hai?</span>
+          <i id="faqIcon-3" class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform"></i>
+        </button>
+        <div id="faqAnswer-3" class="hidden px-5 pb-5 text-xs sm:text-sm text-slate-600 border-t border-slate-100 pt-3 leading-relaxed">
+          Club practice matches daily shaam ko floodlights ke under <strong class="dyn-timings">7:00 PM se lekar 10:30 PM tak</strong> khele jaate hain. Tournament matches schedule ke hisab se hote hain.
+        </div>
+      </div>
+
+      <div class="bg-white border-2 border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+        <button onclick="toggleFaq(4)" class="w-full p-4 sm:p-5 text-left font-black text-sm sm:text-base text-clubNavy flex items-center justify-between gap-4 cursor-pointer">
+          <span>4. Club me singles hota hai ya doubles?</span>
+          <i id="faqIcon-4" class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform"></i>
+        </button>
+        <div id="faqAnswer-4" class="hidden px-5 pb-5 text-xs sm:text-sm text-slate-600 border-t border-slate-100 pt-3 leading-relaxed">
+          Hamare arena me sabhi official matches <strong>strictly Doubles (2 vs 2)</strong> format me khele jaate hain taaki sabhi players ko barabar practice mile.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= 6. LOCATION & CONTACT ================= -->
+  <section id="contact" class="py-16 bg-slate-50 border-t border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="text-xs font-bold text-clubBlue uppercase tracking-widest">Aapka Swagat Hai</span>
+        <h2 class="text-3xl sm:text-4xl font-black text-clubNavy font-serif mt-1">
+          Arena Location & Contact
+        </h2>
+        <p class="text-slate-500 text-sm mt-1">Mandapada arena me aakar hamare sath game enjoy karein.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+        
+        <div class="space-y-4 flex flex-col justify-between">
+          
+          <!-- Address -->
+          <div class="bg-white border-2 border-slate-200 rounded-3xl p-6 shadow-sm flex items-start gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-clubBlue flex items-center justify-center text-xl shrink-0">
+              <i class="fa-solid fa-location-dot"></i>
+            </div>
+            <div>
+              <h4 class="font-black text-base text-clubNavy">Club Address</h4>
+              <p id="dynAddress" class="text-xs text-slate-600 mt-1 leading-relaxed">
+                Mandapada Badminton Club, Mandapada, Odisha, India.
+              </p>
+              <span class="inline-block mt-2 text-[11px] font-bold text-clubBlue bg-blue-50 px-2.5 py-0.5 rounded-md">
+                Professional LED Floodlights Arena
+              </span>
+            </div>
+          </div>
+
+          <!-- Playing Timings -->
+          <div class="bg-white border-2 border-slate-200 rounded-3xl p-6 shadow-sm flex items-start gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-clubGold flex items-center justify-center text-xl shrink-0">
+              <i class="fa-solid fa-clock"></i>
+            </div>
+            <div>
+              <h4 class="font-black text-base text-clubNavy">Regular Playing Timings</h4>
+              <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                <strong class="dyn-timings">Daily Evening: 7:00 PM – 10:30 PM</strong><br/>
+                <span class="text-slate-400 font-medium">Under professional LED floodlights (Winter Season)</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Calling Contact -->
+          <div class="bg-white border-2 border-slate-200 rounded-3xl p-6 shadow-sm flex items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-blue-50 text-clubBlue flex items-center justify-center text-xl shrink-0">
+                <i class="fa-solid fa-phone"></i>
+              </div>
+              <div>
+                <h4 class="font-black text-base text-clubNavy">Calling Contact</h4>
+                <p class="text-xs text-slate-500">Kisi bhi query ke liye call karein</p>
+                <span id="dynContactDisplay" class="font-black text-sm text-clubNavy block mt-0.5">+91 78469 86313</span>
+              </div>
+            </div>
+
+            <a id="dynCallBtn" href="tel:7846986313" class="px-5 py-2.5 bg-clubNavy hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow transition flex items-center gap-1.5 whitespace-nowrap active:scale-95">
+              <i class="fa-solid fa-phone-flip text-[10px] text-amber-400"></i>
+              <span>Call Now</span>
+            </a>
+          </div>
+
+          <!-- WhatsApp Chat -->
+          <div class="bg-white border-2 border-emerald-300 rounded-3xl p-6 shadow-sm flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl shrink-0">
+                <i class="fa-brands fa-whatsapp"></i>
+              </div>
+              <div>
+                <h4 class="font-black text-base text-clubNavy">WhatsApp Support</h4>
+                <p id="dynWhatsappDisplay" class="text-xs text-slate-500">+91 90787 76313</p>
+              </div>
+            </div>
+            
+            <a id="dynWhatsappBtn" href="https://wa.me/919078776313" target="_blank" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl shadow transition flex items-center gap-1.5 whitespace-nowrap active:scale-95">
+              <span>Chat Now</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= 7. UPI PAYMENT MODAL ================= -->
+  <div id="paymentModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 relative">
+      
+      <button onclick="closePaymentModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div id="modalStep1">
+        <div class="text-center mb-5">
+          <span class="text-[11px] font-bold text-clubBlue uppercase tracking-wider block">Mandapada Badminton Club</span>
+          <h3 class="text-xl font-black text-clubNavy mt-0.5">Club Fees Payment</h3>
+        </div>
+
+        <form onsubmit="generateUpiQr(event)" class="space-y-3 text-xs">
+          <div>
+            <label class="block font-bold text-slate-600 mb-1">Aapka Pura Naam (Full Name)</label>
+            <input type="text" id="regName" required placeholder="Eg: Subham Swain" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold text-clubNavy focus:outline-none focus:border-clubBlue" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 mb-1">Mobile / WhatsApp Number</label>
+            <input type="tel" id="regPhone" required placeholder="Eg: 9078776313" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold text-clubNavy focus:outline-none focus:border-clubBlue" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 mb-1">Selected Payment Type</label>
+            <input type="text" id="regPlan" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-black text-clubBlue cursor-not-allowed" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 mb-1">Amount to Pay</label>
+            <input type="text" id="regAmount" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-black text-clubOrange cursor-not-allowed" />
+          </div>
+
+          <button type="submit" class="w-full py-3 bg-clubNavy hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-2 mt-4 cursor-pointer active:scale-95">
+            <span>Proceed to UPI Payment</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </form>
+      </div>
+
+      <div id="modalStep2" class="hidden text-center">
+        <span class="text-[10px] font-black text-emerald-600 uppercase tracking-wider block">Scan & Pay</span>
+        <h3 class="text-lg font-black text-clubNavy mt-0.5">UPI Se Payment Karein</h3>
+        <p class="text-xs text-slate-500 mb-3">Google Pay, PhonePe ya Paytm se QR scan karein.</p>
+
+        <div class="bg-white p-3 rounded-2xl inline-block shadow-md border-2 border-slate-200 mx-auto mb-3">
+          <img id="upiQrCodeImg" src="" alt="UPI QR" class="w-48 h-48 mx-auto" />
+        </div>
+
+        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs text-slate-600 mb-3">
+          Pay to UPI: <span class="text-clubBlue font-black" id="displayUpiId">9078776313@upi</span>
+        </div>
+
+        <a id="mobileUpiLink" href="#" class="w-full py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-2 mb-2">
+          <i class="fa-solid fa-mobile-screen"></i>
+          <span>Pay Via UPI App (GPay/PhonePe)</span>
+        </a>
+
+        <button onclick="confirmPaymentWhatsApp()" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+          <i class="fa-brands fa-whatsapp text-sm"></i>
+          <span>Payment Done! Send On WhatsApp</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= 8. FOOTER ================= -->
+  <footer class="py-8 bg-slate-900 text-slate-400 text-center text-xs">
+    <div class="max-w-7xl mx-auto px-4 space-y-2">
+      <p class="font-bold text-slate-200">Mandapada Badminton Club • </p>
+      <p>Contact: <span id="footContact">+91 78469 86313</span> | WhatsApp: <span id="footWhatsapp">+91 90787 76313</span></p>
+      <p class="dyn-timings">Regular Playing Timings: 7:00 PM – 10:30 PM (Evening Floodlights)</p>
+      <p>© 2026 Mandapada BC. All rights reserved. </p>
+    </div>
+  </footer>
+
+  <!-- ================= FIREBASE REALTIME DATABASE SYNC (NO LOCALSTORAGE) ================= -->
+  <script>
+    /* FIREBASE INITIALIZATION */
+    const firebaseConfig = {
+      apiKey: "AIzaSyCyqCyX17czRzn8MPsguyxGpIuOK4Iqhco",
+      authDomain: "mandapada-badminton.firebaseapp.com",
+      databaseURL: "https://mandapada-badminton-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "mandapada-badminton",
+      storageBucket: "mandapada-badminton.firebasestorage.app",
+      messagingSenderId: "1052398041871",
+      appId: "1:1052398041871:web:900a055cf244597e76dc7a"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function toggleMenu() {
+      const menu = document.getElementById('mobileMenu');
+      const icon = document.getElementById('menuIcon');
+      if (menu.classList.contains('hidden')) {
+        menu.classList.remove('hidden');
+        icon.classList.remove('fa-bars');
+        icon.classList.add('fa-xmark');
+      } else {
+        menu.classList.add('hidden');
+        icon.classList.remove('fa-xmark');
+        icon.classList.add('fa-bars');
+      }
+    }
+
+    function toggleFaq(id) {
+      const answer = document.getElementById(`faqAnswer-${id}`);
+      const icon = document.getElementById(`faqIcon-${id}`);
+      if (answer.classList.contains('hidden')) {
+        answer.classList.remove('hidden');
+        icon.classList.add('rotate-180');
+      } else {
+        answer.classList.add('hidden');
+        icon.classList.remove('rotate-180');
+      }
+    }
+
+    /* GLOBAL STORE SYNCED STRICTLY FROM FIREBASE */
+    let liveSettings = {
+      whatsapp: "9078776313",
+      contact: "7846986313",
+      timings: "Daily Evening: 7:00 PM – 10:30 PM",
+      upiId: "9078776313@upi",
+      seasonalFee: 500,
+      shuttleFee: 50,
+      entryFee: 250,
+      address: "Mandapada Badminton Club, Mandapada, Odisha, India."
+    };
+
+    let liveTournaments = [];
+    let liveTeams = [];
+    let liveFixtures = [];
+    let currentLiveMatchData = null;
+
+    function applyLiveSettings() {
+      const activeTourn = liveTournaments.find(t => t.status === "Active") || liveTournaments[0];
+      const entryFee = activeTourn ? (activeTourn.entryFeePlayer || 250) : (liveSettings.entryFee || 250);
+
+      document.querySelectorAll('.dyn-season-fee').forEach(el => el.textContent = `₹${liveSettings.seasonalFee}`);
+      document.querySelectorAll('.dyn-shuttle-fee').forEach(el => el.textContent = `₹${liveSettings.shuttleFee}`);
+      document.querySelectorAll('.dyn-entry-fee').forEach(el => el.textContent = `₹${entryFee}`);
+      document.querySelectorAll('.dyn-timings').forEach(el => el.textContent = liveSettings.timings);
+
+      if (activeTourn) {
+        document.getElementById('teaserTournName').textContent = activeTourn.name;
+      }
+
+      document.getElementById('dynAddress').textContent = liveSettings.address;
+      document.getElementById('dynContactDisplay').textContent = `+91 ${liveSettings.contact}`;
+      document.getElementById('dynCallBtn').href = `tel:${liveSettings.contact}`;
+      document.getElementById('footContact').textContent = `+91 ${liveSettings.contact}`;
+
+      document.getElementById('dynWhatsappDisplay').textContent = `+91 ${liveSettings.whatsapp}`;
+      document.getElementById('dynWhatsappBtn').href = `https://wa.me/91${liveSettings.whatsapp}?text=Namaste!%20Mujhe%20Mandapada%20Badminton%20Club%20ke%20baare%20me%20jaankari%20chahiye.`;
+      document.getElementById('footWhatsapp').textContent = `+91 ${liveSettings.whatsapp}`;
+      document.getElementById('displayUpiId').textContent = liveSettings.upiId;
+    }
+
+    /* HERO LIVE SCORE CARD STREAM */
+    function renderHeroLiveScore(liveData) {
+      const activeTourn = liveTournaments.find(t => t.status === "Active") || liveTournaments[0];
+
+      function getTeamLogoHtml(teamName) {
+        const t = liveTeams.find(x => x.teamName && x.teamName.trim().toLowerCase() === teamName.trim().toLowerCase());
+        if (t && t.teamLogo && t.teamLogo.trim().length > 0) {
+          return `<img src="${t.teamLogo}" alt="${t.teamName}" class="w-full h-full object-cover rounded-full" onerror="this.onerror=null; this.src='https://via.placeholder.com/60?text=🏸';" />`;
+        }
+        return `<span class="text-xl font-bold text-clubBlue">🏸</span>`;
+      }
+
+      const statusBadge = document.getElementById('heroLiveStatusBadge');
+      const setBadge = document.getElementById('heroSetBadge');
+      const nameA = document.getElementById('heroTeamNameA');
+      const nameB = document.getElementById('heroTeamNameB');
+      const logoA = document.getElementById('heroTeamLogoA');
+      const logoB = document.getElementById('heroTeamLogoB');
+      const setsA = document.getElementById('heroTeamSetsA');
+      const setsB = document.getElementById('heroTeamSetsB');
+      const ptsA = document.getElementById('heroLivePtsA');
+      const ptsB = document.getElementById('heroLivePtsB');
+      const historyText = document.getElementById('heroSetsHistory');
+
+      // 1. IF MATCH IS CURRENTLY LIVE IN FIREBASE
+      if (liveData && liveData.active && liveData.teamA && liveData.teamB) {
+        statusBadge.className = "px-2.5 py-0.5 bg-red-50 text-red-600 border border-red-200 text-[10px] font-black rounded-full uppercase tracking-wider inline-flex items-center gap-1.5";
+        statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> LIVE MATCH`;
+        setBadge.textContent = `SET ${liveData.currentSet || 1} (Best of 3)`;
+
+        nameA.textContent = liveData.teamA.teamName;
+        nameB.textContent = liveData.teamB.teamName;
+        logoA.innerHTML = getTeamLogoHtml(liveData.teamA.teamName);
+        logoB.innerHTML = getTeamLogoHtml(liveData.teamB.teamName);
+
+        setsA.textContent = `Sets: ${liveData.setsA || 0}`;
+        setsB.textContent = `Sets: ${liveData.setsB || 0}`;
+        ptsA.textContent = liveData.ptsA || 0;
+        ptsB.textContent = liveData.ptsB || 0;
+
+        if (liveData.completedSets && liveData.completedSets.length > 0) {
+          historyText.textContent = liveData.completedSets.map(s => `Set ${s.set}: [${s.a}-${s.b}]`).join('  •  ');
+        } else {
+          historyText.textContent = "Match in progress";
+        }
+      } 
+      // 2. UPCOMING MATCH FROM FIXTURES
+      else if (liveFixtures && liveFixtures.length > 0 && liveFixtures.some(f => f.status === 'Upcoming')) {
+        const upcoming = liveFixtures.find(f => f.status === 'Upcoming');
+        statusBadge.className = "px-2.5 py-0.5 bg-blue-50 text-clubBlue border border-blue-200 text-[10px] font-black rounded-full uppercase tracking-wider inline-flex items-center gap-1.5";
+        statusBadge.textContent = "NEXT MATCH";
+        setBadge.textContent = upcoming.round || "Upcoming";
+
+        nameA.textContent = upcoming.teamA;
+        nameB.textContent = upcoming.teamB;
+        logoA.innerHTML = getTeamLogoHtml(upcoming.teamA);
+        logoB.innerHTML = getTeamLogoHtml(upcoming.teamB);
+
+        setsA.textContent = "Match";
+        setsB.textContent = "Schedule";
+        ptsA.textContent = "-";
+        ptsB.textContent = "-";
+        historyText.textContent = `${upcoming.time || 'Schedule announced'}`;
+      } 
+      // 3. DEFAULT TOURNAMENT STAGE
+      else {
+        const stage = activeTourn ? (activeTourn.stage || "Coming Soon") : "Coming Soon";
+        statusBadge.className = "px-2.5 py-0.5 bg-slate-800 text-amber-400 border border-amber-400/40 text-[10px] font-black rounded-full uppercase tracking-wider inline-flex items-center gap-1.5";
+        statusBadge.textContent = stage;
+        setBadge.textContent = "LIVE FEED";
+
+        nameA.textContent = liveTeams[0] ? liveTeams[0].teamName : "Team 1";
+        nameB.textContent = liveTeams[1] ? liveTeams[1].teamName : "Team 2";
+        logoA.innerHTML = liveTeams[0] ? getTeamLogoHtml(liveTeams[0].teamName) : '<span class="text-xl">⚡</span>';
+        logoB.innerHTML = liveTeams[1] ? getTeamLogoHtml(liveTeams[1].teamName) : '<span class="text-xl">👑</span>';
+
+        setsA.textContent = "Tournament";
+        setsB.textContent = "Doubles";
+        ptsA.textContent = "0";
+        ptsB.textContent = "0";
+        historyText.textContent = activeTourn && activeTourn.dateDetails ? activeTourn.dateDetails : "Dates To Be Announced Soon";
+      }
+    }
+
+    /* FIREBASE REALTIME LISTENERS */
+    db.ref('settings').on('value', snap => {
+      const val = snap.val();
+      if (val) {
+        liveSettings = { ...liveSettings, ...val };
+        applyLiveSettings();
+      }
+    });
+
+    db.ref('tournaments').on('value', snap => {
+      const val = snap.val();
+      if (val) {
+        liveTournaments = Object.values(val);
+        applyLiveSettings();
+      }
+    });
+
+    db.ref('teams').on('value', snap => {
+      const val = snap.val();
+      if (val) {
+        liveTeams = Object.values(val);
+        renderHeroLiveScore(currentLiveMatchData);
+      }
+    });
+
+    db.ref('fixtures').on('value', snap => {
+      const val = snap.val();
+      if (val) {
+        liveFixtures = Object.values(val);
+        renderHeroLiveScore(currentLiveMatchData);
+      }
+    });
+
+    db.ref('live_scoring').on('value', snap => {
+      currentLiveMatchData = snap.val();
+      renderHeroLiveScore(currentLiveMatchData);
+    });
+
+    /* PAYMENT MODAL */
+    function openPaymentModalFromButton(type) {
+      if (type === 'season') {
+        openPaymentModal('Winter Seasonal Membership', liveSettings.seasonalFee);
+      } else {
+        openPaymentModal('Bi-Weekly Shuttle Contribution', liveSettings.shuttleFee);
+      }
+    }
+
+    function openPaymentModal(planName, amount) {
+      document.getElementById('regPlan').value = planName;
+      document.getElementById('regAmount').value = "₹" + amount;
+      document.getElementById('modalStep1').classList.remove('hidden');
+      document.getElementById('modalStep2').classList.add('hidden');
+      document.getElementById('paymentModal').classList.remove('hidden');
+    }
+
+    function closePaymentModal() { document.getElementById('paymentModal').classList.add('hidden'); }
+
+    function generateUpiQr(e) {
+      e.preventDefault();
+      const name = document.getElementById('regName').value;
+      const amountStr = document.getElementById('regAmount').value.replace('₹', '');
+      
+      const upiUri = `upi://pay?pa=${encodeURIComponent(liveSettings.upiId)}&pn=Mandapada%20Badminton%20Club&am=${amountStr}&cu=INR&tn=${encodeURIComponent('MBC Fee - ' + name)}`;
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUri)}`;
+      
+      document.getElementById('upiQrCodeImg').src = qrApiUrl;
+      document.getElementById('mobileUpiLink').href = upiUri;
+
+      document.getElementById('modalStep1').classList.add('hidden');
+      document.getElementById('modalStep2').classList.remove('hidden');
+    }
+
+    function confirmPaymentWhatsApp() {
+      const name = document.getElementById('regName').value;
+      const phone = document.getElementById('regPhone').value;
+      const plan = document.getElementById('regPlan').value;
+      const amount = document.getElementById('regAmount').value.replace('₹', '');
+
+      // PUSH TO FIREBASE REALTIME DATABASE PAYMENTS LOG
+      db.ref('payments').push({
+        name: name,
+        phone: phone,
+        plan: plan,
+        amount: amount,
+        date: new Date().toLocaleDateString()
+      });
+
+      const message = `Namaste Mandapada Badminton Club! 🏸%0A%0AMaine payment kar di hai:%0A👤 *Name:* ${encodeURIComponent(name)}%0A📞 *Phone:* ${encodeURIComponent(phone)}%0A🏷️ *Payment For:* ${encodeURIComponent(plan)}%0A💰 *Amount:* ₹${amount}%0A%0AKripya verify karein.`;
+      
+      window.open(`https://wa.me/91${liveSettings.whatsapp}?text=${message}`, '_blank');
+      closePaymentModal();
+    }
+
+    applyLiveSettings();
+  </script>
+
+</body>
+  </html>
