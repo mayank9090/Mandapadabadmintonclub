@@ -522,6 +522,7 @@
             <option value="Date Announced">📢 Date Announced (Registration Open)</option>
             <option value="Preparation">🛠️ Preparation (1 Week to go / Draws finalizing)</option>
             <option value="Live">🟢 Live (Match Day / Active Scoring)</option>
+            <option value="Completed">🏆 Completed / Archived</option>
           </select>
         </div>
         <div>
@@ -665,7 +666,7 @@
     }
 
     /* ====================================================
-       FIREBASE REAL-TIME SYNC (WITHOUT FORCING DUMMY RESET)
+       FIREBASE REAL-TIME SYNC
     ==================================================== */
     db.ref('settings').on('value', snap => {
       const val = snap.val();
@@ -732,6 +733,8 @@
     function getStageBadgeHtml(stage) {
       if (stage === "Live") {
         return `<span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[10px] font-black rounded-full uppercase">🟢 LIVE</span>`;
+      } else if (stage === "Completed") {
+        return `<span class="px-2.5 py-0.5 bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[10px] font-black rounded-full uppercase">🏆 COMPLETED</span>`;
       } else if (stage === "Preparation") {
         return `<span class="px-2.5 py-0.5 bg-amber-500/20 text-amber-400 border border-amber-500/40 text-[10px] font-black rounded-full uppercase">🛠️ PREPARATION</span>`;
       } else if (stage === "Date Announced") {
@@ -808,6 +811,7 @@
                   <option value="Date Announced" ${curStage === 'Date Announced' ? 'selected' : ''}>📢 Date Announced (Registration Open)</option>
                   <option value="Preparation" ${curStage === 'Preparation' ? 'selected' : ''}>🛠️ Preparation (1 Week to go / Draws finalizing)</option>
                   <option value="Live" ${curStage === 'Live' ? 'selected' : ''}>🟢 Live (Match Day / Active Scoring)</option>
+                  <option value="Completed" ${curStage === 'Completed' ? 'selected' : ''}>🏆 Completed / Archived</option>
                 </select>
               </div>
 
@@ -1240,12 +1244,45 @@
 
       db.ref('teams').set(teams);
 
+      let isGrandFinalMatch = false;
+
       if (currentScoringFixtureId) {
         const curFix = fixtures.find(f => f.id === currentScoringFixtureId);
         if (curFix) {
           curFix.status = "Finished";
           curFix.score = finalScoreString;
           db.ref('fixtures').set(fixtures);
+
+          if (curFix.round && (curFix.round.toLowerCase().includes('final') || curFix.round.toLowerCase().includes('grand'))) {
+            isGrandFinalMatch = true;
+          }
+        }
+      }
+
+      // 📜 AUTO-ARCHIVE GRAND FINAL TO TOURNAMENT HISTORY
+      if (isGrandFinalMatch) {
+        const activeTourn = tournaments.find(t => t.status === "Active") || tournaments[0];
+        const tournName = activeTourn ? activeTourn.name : "Mandapada Championship";
+        const seasonName = activeTourn ? (activeTourn.season || "Championship Season") : "Championship";
+
+        const historyPayload = {
+          id: "hist_" + Date.now(),
+          tournamentName: tournName,
+          season: seasonName,
+          dateCompleted: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+          champion: winner.teamName,
+          championPartners: winner.partners || "",
+          runners: loser.teamName,
+          runnersPartners: loser.partners || "",
+          finalScore: finalScoreString
+        };
+
+        db.ref('tournament_history').push(historyPayload);
+
+        // Mark active tournament as Completed
+        if (activeTourn) {
+          activeTourn.stage = "Completed";
+          db.ref('tournaments').set(tournaments);
         }
       }
 
@@ -1253,7 +1290,7 @@
 
       const nextFixture = fixtures.find(f => f.status === "Upcoming" && f.id !== currentScoringFixtureId);
 
-      if (nextFixture) {
+      if (nextFixture && !isGrandFinalMatch) {
         alert(`✅ Match Saved to Firebase!\n${winner.teamName} def. ${loser.teamName} (${finalScoreString})\n\n⏭️ Agla Match Load Kiya Jaa Raha Hai:\n${nextFixture.round} (${nextFixture.time}): ${nextFixture.teamA} vs ${nextFixture.teamB}`);
         
         let nextA = teams.find(t => t.teamName.trim().toLowerCase() === nextFixture.teamA.trim().toLowerCase()) || { id: 991, teamName: nextFixture.teamA, teamLogo: "", played: 0, won: 0, lost: 0, diff: 0, points: 0 };
@@ -1262,7 +1299,7 @@
         currentScoringFixtureId = nextFixture.id;
         loadMatchIntoLiveBoard(nextA, nextB, nextFixture);
       } else {
-        alert(`✅ Match Saved to Firebase!\n${winner.teamName} def. ${loser.teamName} (${finalScoreString})\n\n🎉 Sabhi Fixture Matches poore ho chuke hain! Points Table Final Standings check karein.`);
+        alert(`✅ Grand Final Saved & Archived!\n🏆 Champion: ${winner.teamName}\n🥈 Runners-Up: ${loser.teamName}\n\nYeh tournament ab 'Tournament History' me automatically add ho gaya hai!`);
         document.getElementById('liveScoreboardCard').classList.add('hidden');
         document.getElementById('matchSetupCard').classList.remove('hidden');
         liveMatch.active = false;
@@ -1504,4 +1541,4 @@
   </script>
 
 </body>
-                </html>
+  </html>
