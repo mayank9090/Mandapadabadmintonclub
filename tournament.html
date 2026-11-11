@@ -178,7 +178,7 @@
     </div>
   </section>
 
-  <!-- ================= 3. NAVIGATION TABS (5 TABS DYNAMIC COUNTS) ================= -->
+  <!-- ================= 3. NAVIGATION TABS ================= -->
   <div class="sticky top-16 sm:top-20 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 py-2.5 mb-4 shadow-xs">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
       <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs sm:text-sm font-bold">
@@ -202,20 +202,23 @@
           <i class="fa-solid fa-book"></i>
           <span>5. Rules & Fees</span>
         </button>
+        <button onclick="switchTab('historyTab')" id="btn-historyTab" class="tab-btn px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl transition text-slate-600 hover:bg-slate-100 flex items-center gap-1.5 whitespace-nowrap text-xs text-amber-600 font-black">
+          <i class="fa-solid fa-trophy"></i>
+          <span>6. 📜 History (<span id="historyBadgeCount">0</span>)</span>
+        </button>
       </div>
     </div>
   </div>
 
   <main class="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 pb-12">
 
-    <!-- ================= TAB 1: POINTS TABLE (ALL 8 COLUMNS MOBILE-FRIENDLY) ================= -->
+    <!-- ================= TAB 1: POINTS TABLE ================= -->
     <section id="pointsTab" class="tab-content block space-y-3">
       <div class="px-1">
         <h2 class="text-base sm:text-2xl font-black text-clubNavy">Tournament Points Table</h2>
         <span class="text-[10px] sm:text-xs text-slate-500 font-semibold block">Top 4 Teams Playoffs ke liye qualify karenge </span>
       </div>
 
-      <!-- MOBILE 8-COLUMNS TABLE -->
       <div class="bg-white border-2 border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="w-full overflow-x-auto no-scrollbar">
           <table class="w-full text-left border-collapse text-xs">
@@ -245,14 +248,13 @@
       </div>
     </section>
 
-    <!-- ================= TAB 2: PLAYOFFS & FIXTURES (AUTO-PROGRESSION ENGINE) ================= -->
+    <!-- ================= TAB 2: PLAYOFFS & FIXTURES ================= -->
     <section id="fixturesTab" class="tab-content hidden space-y-5">
       <div>
         <h2 class="text-lg sm:text-2xl font-black text-clubNavy">Playoffs & Match Schedule</h2>
         <span class="text-xs text-slate-500">League matches aur Top 4 Playoffs Stage</span>
       </div>
 
-      <!-- PLAYOFFS STAGE CARDS (AUTO-UPDATES ON LEAGUE FINISH) -->
       <div class="space-y-3">
         <div class="flex items-center justify-between px-1">
           <span class="text-xs font-black text-clubBlue uppercase tracking-wider block">🏆 Playoffs Stage (Top 4 Qualifiers)</span>
@@ -261,51 +263,38 @@
           </span>
         </div>
 
-        <!-- Playoff 1 & Playoff 2 Matchups -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           
-          <!-- Playoff 1  -->
           <div class="bg-white border-2 border-blue-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
             <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-slate-100">
               <span class="text-[10px] font-black text-clubBlue uppercase bg-blue-50 px-2 py-0.5 rounded">Playoff 1 (Semi-Final 1)</span>
               <span id="sf1StatusBadge" class="text-[10px] font-bold text-slate-400">Rank #1 vs Rank #4</span>
             </div>
 
-            <!-- Dynamic Team 1 vs Team 4 Matchup -->
-            <div id="sf1MatchupContainer" class="py-2 flex items-center justify-between">
-              <!-- Rendered via JS -->
-            </div>
+            <div id="sf1MatchupContainer" class="py-2 flex items-center justify-between"></div>
 
             <span class="text-[10px] text-slate-400 font-semibold block text-center pt-1 border-t border-slate-50">Winner advances to Grand Final</span>
           </div>
 
-          <!-- Playoff 2  -->
           <div class="bg-white border-2 border-blue-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
             <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-slate-100">
               <span class="text-[10px] font-black text-clubBlue uppercase bg-blue-50 px-2 py-0.5 rounded">Playoff 2 (Semi-Final 2)</span>
               <span id="sf2StatusBadge" class="text-[10px] font-bold text-slate-400">Rank #2 vs Rank #3</span>
             </div>
 
-            <!-- Dynamic Team 2 vs Team 3 Matchup -->
-            <div id="sf2MatchupContainer" class="py-2 flex items-center justify-between">
-              <!-- Rendered via JS -->
-            </div>
+            <div id="sf2MatchupContainer" class="py-2 flex items-center justify-between"></div>
 
             <span class="text-[10px] text-slate-400 font-semibold block text-center pt-1 border-t border-slate-50">Winner advances to Grand Final</span>
           </div>
 
         </div>
 
-        <!-- Grand Final Card (Auto-Updates With Finalists) -->
         <div class="bg-gradient-to-b from-amber-50 to-white border-2 border-amber-400 rounded-2xl p-4 sm:p-5 shadow-sm text-center mt-2">
           <span class="px-3 py-0.5 bg-amber-500 text-slate-950 font-black text-[9px] uppercase rounded-full">
             🏆 Grand Championship Final
           </span>
 
-          <!-- Finalist Matchup or Placeholder -->
-          <div id="finalMatchupContainer" class="my-3 py-2 border-y border-amber-200">
-            <!-- Rendered via JS -->
-          </div>
+          <div id="finalMatchupContainer" class="my-3 py-2 border-y border-amber-200"></div>
 
           <span class="inline-block text-[11px] font-bold text-amber-700 bg-amber-100 px-3 py-1 rounded-full">
             Official Trophies & Medals Presentation
@@ -313,7 +302,6 @@
         </div>
       </div>
 
-      <!-- AUTO-CALCULATED FIXTURES SECTION -->
       <div id="generatedFixturesSection" class="space-y-3 pt-3 border-t border-slate-200 hidden">
         <div class="flex items-center justify-between px-1">
           <span class="text-xs font-black text-clubOrange uppercase tracking-wider block">⚡ Live Scheduled Matches</span>
@@ -347,14 +335,13 @@
       <div id="playersGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
     </section>
 
-    <!-- ================= TAB 5: RULES & FEES (DETAILED) ================= -->
+    <!-- ================= TAB 5: RULES & FEES ================= -->
     <section id="rulesTab" class="tab-content hidden space-y-4">
       <div>
         <h2 class="text-lg sm:text-2xl font-black text-clubNavy">Tournament Rules & Guidelines</h2>
         <span class="text-xs text-slate-500">Mandapada Badminton Club Official Rules, Regulations & Terms</span>
       </div>
 
-      <!-- Entry Fee Highlight Card -->
       <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-blue-50 border-2 border-emerald-300 rounded-2xl p-4 sm:p-5 shadow-sm">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-lg font-black shrink-0">₹</div>
@@ -365,10 +352,8 @@
         </div>
       </div>
 
-      <!-- Detailed Rules Grid -->
       <div id="rulesListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
         
-        <!-- Rule 1: Format & Structure -->
         <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-sm">
           <h4 class="font-black text-xs text-clubNavy flex items-center gap-2">
             <span class="w-5 h-5 rounded-full bg-blue-100 text-clubBlue flex items-center justify-center text-[10px] font-bold">1</span>
@@ -382,7 +367,6 @@
           </ul>
         </div>
 
-        <!-- Rule 2: Scoring System -->
         <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-sm">
           <h4 class="font-black text-xs text-clubNavy flex items-center gap-2">
             <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px] font-bold">2</span>
@@ -395,7 +379,6 @@
           </ul>
         </div>
 
-        <!-- Rule 3: Registration & Fees Terms -->
         <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-sm">
           <h4 class="font-black text-xs text-clubNavy flex items-center gap-2">
             <span class="w-5 h-5 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-[10px] font-bold">3</span>
@@ -408,7 +391,6 @@
           </ul>
         </div>
 
-        <!-- Rule 4: Match Timings & Attendance -->
         <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-sm">
           <h4 class="font-black text-xs text-clubNavy flex items-center gap-2">
             <span class="w-5 h-5 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-[10px] font-bold">4</span>
@@ -421,7 +403,6 @@
           </ul>
         </div>
 
-        <!-- Rule 5: Code of Conduct & Fair Play -->
         <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-sm">
           <h4 class="font-black text-xs text-clubNavy flex items-center gap-2">
             <span class="w-5 h-5 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-[10px] font-bold">5</span>
@@ -434,7 +415,6 @@
           </ul>
         </div>
 
-        <!-- Rule 6: Prizes & Awards -->
         <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-sm">
           <h4 class="font-black text-xs text-clubNavy flex items-center gap-2">
             <span class="w-5 h-5 rounded-full bg-cyan-100 text-cyan-700 flex items-center justify-center text-[10px] font-bold">6</span>
@@ -447,6 +427,23 @@
           </ul>
         </div>
 
+      </div>
+    </section>
+
+    <!-- ================= TAB 6: TOURNAMENT HISTORY / PAST CHAMPIONS ================= -->
+    <section id="historyTab" class="tab-content hidden space-y-5">
+      <div>
+        <h2 class="text-lg sm:text-2xl font-black text-clubNavy">📜 Tournament History & Past Champions</h2>
+        <span class="text-xs text-slate-500">Club ke sabhi pichle successful tournaments aur unke Winners ka record</span>
+      </div>
+
+      <div id="tournamentHistoryGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Dynamically rendered from Firebase tournament_history -->
+      </div>
+      
+      <div id="historyEmptyMsg" class="hidden text-center py-12 bg-white rounded-2xl border border-slate-200">
+        <i class="fa-solid fa-trophy-star text-4xl text-slate-300 mb-2 block"></i>
+        <p class="text-xs text-slate-500 font-bold">Abhi tak koi tournament archive nahi hua hai. Grand Final complete hone par yahan history dikhegi.</p>
       </div>
     </section>
 
@@ -492,10 +489,11 @@
       players: [],
       fixtures: [],
       settings: { entryFee: 250 },
-      liveScoring: null
+      liveScoring: null,
+      history: []
     };
 
-    // Real-time Listeners with correct database paths (`tournaments`, `teams`, `players`, `fixtures`, `settings`, `live_scoring`)
+    // Real-time Listeners with correct database paths (`tournaments`, `teams`, `players`, `fixtures`, `settings`, `live_scoring`, `tournament_history`)
     onValue(ref(db, 'tournaments'), (snapshot) => {
       const val = snapshot.val();
       window.firebaseData.tournaments = val ? (Array.isArray(val) ? val : Object.values(val)) : [];
@@ -530,6 +528,14 @@
       window.firebaseData.liveScoring = snapshot.val() || null;
       if (typeof renderTournamentLiveScore === 'function') {
         renderTournamentLiveScore();
+      }
+    });
+
+    onValue(ref(db, 'tournament_history'), (snapshot) => {
+      const val = snapshot.val();
+      window.firebaseData.history = val ? Object.values(val) : [];
+      if (typeof renderTournamentHistory === 'function') {
+        renderTournamentHistory();
       }
     });
 
@@ -573,6 +579,9 @@
         if (stage === "Live") {
           badgeEl.className = "px-3 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[10px] sm:text-[11px] font-black rounded-full uppercase tracking-wider inline-flex items-center gap-1.5";
           badgeEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 🟢 LIVE TOURNAMENT`;
+        } else if (stage === "Completed") {
+          badgeEl.className = "px-3 py-0.5 bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[10px] sm:text-[11px] font-black rounded-full uppercase tracking-wider";
+          badgeEl.textContent = `🏆 COMPLETED / ARCHIVED`;
         } else if (stage === "Preparation") {
           badgeEl.className = "px-3 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] sm:text-[11px] font-black rounded-full uppercase tracking-wider";
           badgeEl.textContent = `🛠️ PREPARATION STAGE`;
@@ -617,6 +626,7 @@
       renderLivePlayersGrid();
       renderTournamentLiveScore();
       updatePlayoffsProgression();
+      renderTournamentHistory();
     }
 
     function openPosterModal() {
@@ -958,6 +968,68 @@
               <h4 class="font-black text-xs text-clubNavy leading-none">${p.name}</h4>
               <span class="text-[9px] text-clubOrange font-bold block mt-0.5">${p.role}</span>
               <p class="text-[9px] text-slate-400 mt-0.5">${p.team} • ${p.hand}</p>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    /* RENDER TOURNAMENT HISTORY TAB */
+    function renderTournamentHistory() {
+      const fb = window.firebaseData || {};
+      const historyList = fb.history || [];
+      const grid = document.getElementById('tournamentHistoryGrid');
+      const emptyMsg = document.getElementById('historyEmptyMsg');
+      const badgeCount = document.getElementById('historyBadgeCount');
+
+      badgeCount.textContent = historyList.length;
+      grid.innerHTML = '';
+
+      if (historyList.length === 0) {
+        emptyMsg.classList.remove('hidden');
+        return;
+      }
+      emptyMsg.classList.add('hidden');
+
+      const reversedHistory = [...historyList].reverse();
+
+      reversedHistory.forEach(item => {
+        grid.innerHTML += `
+          <div class="bg-gradient-to-br from-amber-50/80 via-white to-blue-50/50 border-2 border-amber-300 rounded-3xl p-5 shadow-md">
+            <div class="flex items-center justify-between pb-3 border-b border-amber-200">
+              <span class="px-3 py-1 bg-amber-500 text-slate-950 font-black text-[10px] rounded-full uppercase">🏆 ${item.season || 'Championship'}</span>
+              <span class="text-xs text-slate-500 font-bold"><i class="fa-solid fa-calendar mr-1"></i>${item.dateCompleted || 'Archived'}</span>
+            </div>
+            <h3 class="text-base font-black text-clubNavy mt-3 font-serif">${item.tournamentName}</h3>
+            
+            <div class="mt-4 space-y-3">
+              <div class="p-3 bg-emerald-500/10 border border-emerald-300 rounded-2xl flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <span class="text-2xl">🥇</span>
+                  <div>
+                    <span class="text-[10px] font-bold text-emerald-700 uppercase block">Champion Team</span>
+                    <h4 class="font-black text-sm text-clubNavy">${item.champion}</h4>
+                    <span class="text-[11px] text-slate-500">${item.championPartners || ''}</span>
+                  </div>
+                </div>
+                <span class="text-xs font-black text-emerald-600 bg-emerald-100 px-2.5 py-1 rounded-xl">WINNER</span>
+              </div>
+
+              <div class="p-3 bg-slate-100 border border-slate-200 rounded-2xl flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <span class="text-2xl">🥈</span>
+                  <div>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase block">Runners-Up</span>
+                    <h4 class="font-black text-sm text-clubNavy">${item.runners}</h4>
+                    <span class="text-[11px] text-slate-500">${item.runnersPartners || ''}</span>
+                  </div>
+                </div>
+                <span class="text-xs font-bold text-slate-600 bg-slate-200 px-2.5 py-1 rounded-xl">Finalist</span>
+              </div>
+            </div>
+
+            <div class="mt-3 pt-3 border-t border-slate-100 text-[11px] text-slate-500 text-center font-mono">
+              Final Score: ${item.finalScore || 'Completed'}
             </div>
           </div>
         `;
