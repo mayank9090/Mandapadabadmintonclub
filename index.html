@@ -103,6 +103,7 @@
       <a href="index.html" onclick="toggleMenu()" class="block px-3 py-2 rounded-lg text-clubBlue font-bold bg-blue-50 border-l-4 border-clubBlue">Home</a>
       <a href="tournament.html" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 font-semibold flex items-center justify-between">
         <span> Tournaments & Points Table</span>
+      </a>
       <a href="#membership" onclick="toggleMenu()" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 font-semibold">Membership</a>
       <a href="#faqs" onclick="toggleMenu()" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 font-semibold">FAQs</a>
       <a href="#contact" onclick="toggleMenu()" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 font-semibold">Contact</a>
@@ -199,9 +200,9 @@
           </div>
         </div>
 
-        <!-- Clean Footer -->
+        <!-- Clean Footer (Dynamic Date & Time from Admin) -->
         <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-          <span id="heroSetsHistory" class="font-semibold text-emerald-700 truncate max-w-[260px]">Live feed active</span>
+          <span id="heroSetsHistory" class="font-semibold text-emerald-700 truncate max-w-[260px]">Dates To Be Announced Soon</span>
           <span class="text-emerald-600 font-bold flex items-center gap-1 text-[10px]">
             <i class="fa-solid fa-bolt"></i> Live Score
           </span>
@@ -259,16 +260,20 @@
     </div>
   </section>
 
-  <!-- ================= 3. TOURNAMENT TEASER BANNER ================= -->
+  <!-- ================= 3. TOURNAMENT TEASER BANNER (SYNCED WITH ADMIN DATE & TIME) ================= -->
   <section class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-clubOrange rounded-3xl p-8 sm:p-12 text-slate-950 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
       <div>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
           <span class="px-3 py-1 bg-slate-950 text-white text-[11px] font-black rounded-full uppercase tracking-wider">
             Doubles
           </span>
           <span class="px-3 py-1 bg-white/30 text-slate-950 text-[11px] font-black rounded-full">
             Entry Fee: <span class="dyn-entry-fee">₹250</span> / Player
+          </span>
+          <span class="px-3 py-1 bg-slate-950/20 text-slate-950 text-[11px] font-black rounded-full flex items-center gap-1.5 border border-slate-950/10">
+            <i class="fa-solid fa-calendar-days text-slate-950 text-xs"></i>
+            <span id="teaserTournDateText">Dates To Be Announced Soon</span>
           </span>
         </div>
         <h3 id="teaserTournName" class="text-3xl sm:text-4xl font-black mt-2 font-serif text-white">
@@ -655,6 +660,12 @@
 
       if (activeTourn) {
         document.getElementById('teaserTournName').textContent = activeTourn.name;
+        
+        // Dynamic Date & Time in Teaser Banner
+        const teaserDateEl = document.getElementById('teaserTournDateText');
+        if (teaserDateEl) {
+          teaserDateEl.textContent = activeTourn.dateDetails || "Dates To Be Announced Soon";
+        }
       }
 
       document.getElementById('dynAddress').textContent = liveSettings.address;
@@ -730,9 +741,9 @@
         setsB.textContent = "Schedule";
         ptsA.textContent = "-";
         ptsB.textContent = "-";
-        historyText.textContent = `${upcoming.time || 'Schedule announced'}`;
+        historyText.textContent = `${upcoming.time || (activeTourn && activeTourn.dateDetails ? activeTourn.dateDetails : 'Schedule announced')}`;
       } 
-      // 3. DEFAULT TOURNAMENT STAGE
+      // 3. DEFAULT TOURNAMENT STAGE (DYNAMICALLY SHOWS TOURNAMENT DATE & TIME SET FROM ADMIN)
       else {
         const stage = activeTourn ? (activeTourn.stage || "Coming Soon") : "Coming Soon";
         statusBadge.className = "px-2.5 py-0.5 bg-slate-800 text-amber-400 border border-amber-400/40 text-[10px] font-black rounded-full uppercase tracking-wider inline-flex items-center gap-1.5";
@@ -764,15 +775,16 @@
     db.ref('tournaments').on('value', snap => {
       const val = snap.val();
       if (val) {
-        liveTournaments = Object.values(val);
+        liveTournaments = Array.isArray(val) ? val : Object.values(val);
         applyLiveSettings();
+        renderHeroLiveScore(currentLiveMatchData);
       }
     });
 
     db.ref('teams').on('value', snap => {
       const val = snap.val();
       if (val) {
-        liveTeams = Object.values(val);
+        liveTeams = Array.isArray(val) ? val : Object.values(val);
         renderHeroLiveScore(currentLiveMatchData);
       }
     });
@@ -780,7 +792,7 @@
     db.ref('fixtures').on('value', snap => {
       const val = snap.val();
       if (val) {
-        liveFixtures = Object.values(val);
+        liveFixtures = Array.isArray(val) ? val : Object.values(val);
         renderHeroLiveScore(currentLiveMatchData);
       }
     });
